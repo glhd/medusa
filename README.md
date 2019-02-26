@@ -1,2 +1,3 @@
-# medusa
-Headless content management
+# Medusa
+
+Chop that head off.
