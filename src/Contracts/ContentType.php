@@ -3,8 +3,9 @@
 namespace Galahad\Medusa\Contracts;
 
 use Galahad\Medusa\Collections\FieldCollection;
+use Illuminate\Contracts\Routing\UrlRoutable;
 
-interface ContentType
+interface ContentType extends UrlRoutable
 {
 	/**
 	 * Get the unique identifier for this content type
@@ -33,4 +34,20 @@ interface ContentType
 	 * @return bool
 	 */
 	public function isSingleton() : bool;
+	
+	/**
+	 * Generate a unique slug based on the content
+	 *
+	 * @param array $data
+	 * @return string
+	 */
+	public function generateSlugFromData(array $data) : string;
+	
+	/**
+	 * Generate a description based on the content
+	 *
+	 * @param array $data
+	 * @return string
+	 */
+	public function generateDescriptionFromData(array $data) : string;
 }

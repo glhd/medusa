@@ -35,8 +35,10 @@ const useDependencies = () => {
 			loadScript('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js'),
 			loadScript('https://cdn.jsdelivr.net/npm/froala-editor@2.9.3/js/froala_editor.pkgd.min.js'),
 		]).then(() => {
-			dependenciesLoaded = true;
-			setLoaded(true);
+			setTimeout(() => {
+				dependenciesLoaded = true;
+				setLoaded(true);
+			}, 100);
 		});
 	}, []);
 	
@@ -44,9 +46,9 @@ const useDependencies = () => {
 };
 
 export default (props) => {
-	const { name, errors, label, initial_value, value, config, onChange } = props;
+	const { name, errors, label, initial_value, existing, value, config, onChange } = props;
 	const id = `medusa-${ name }`;
-	const dirty = initial_value !== value;
+	const dirty = existing ? existing !== value : initial_value !== value;
 	
 	const loaded = useDependencies();
 	
@@ -91,7 +93,6 @@ export default (props) => {
 					)) }
 				</ul>
 			) }
-			<Debugger {...props} />
 		</div>
 	);
 };

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Validator from 'validatorjs';
 
-export default function useValidation(data, rules) {
-	const [errors, setErrors] = useState({});
+export default function useValidation(data, rules, server_errors = {}) {
+	const [errors, setErrors] = useState(server_errors);
 	const cycle = useRef(0);
 	const debounce = useRef(null);
 	

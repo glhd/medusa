@@ -57,7 +57,7 @@ class MedusaServiceProvider extends ServiceProvider
 		$content_model = $this->app->make(Repository::class)->get('medusa.content_model');
 		if (class_exists($content_model)) {
 			$content_contract = Content::class;
-			if (!is_a($content_model, $content_contract)) {
+			if (!is_subclass_of($content_model, $content_contract)) {
 				throw new ConfigurationException("'{$content_model}' must implement '$content_contract'");
 			}
 			
@@ -102,8 +102,17 @@ class MedusaServiceProvider extends ServiceProvider
 			'as' => 'medusa.',
 		];
 		
-		$registrar->group($group, function() use ($registrar) {
-			$registrar->resource('content', ContentController::class);
+		$controller = ContentController::class;
+		
+		$registrar->group($group, function() use ($registrar, $controller) {
+			$registrar->get('/', "$controller@index")->name('index');
+			$registrar->get('/create/{content_type}', "$controller@create")->name('create');
+			$registrar->post('/', "$controller@store")->name('store');
+			$registrar->get('/{content}', "$controller@show")->name('show');
+			$registrar->get('/{content}/edit', "$controller@edit")->name('edit');
+			$registrar->put('/{content}', "$controller@update")->name('update');
+			$registrar->patch('/{content}', "$controller@update");
+			$registrar->delete('/{content}', "$controller@destroy")->name('destroy');
 		});
 		
 		return $this;

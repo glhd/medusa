@@ -38,13 +38,16 @@ return [
 	
 	/*
 	|--------------------------------------------------------------------------
-	| Content Model
+	| Default Content Model Configuration
 	|--------------------------------------------------------------------------
 	|
 	| Here you may specify the model that represents Medusa content in your app.
-	| This model must implement the Galahad\Medusa\Contracts\Content interface.
+	| This model must implement the Galahad\Medusa\Contracts\Content interface
+	| If you are using the default Content model, you can also override the
+	| tables that content are stored in.
 	|
 	*/
 	
-	'content_model' => '\\App\\Content',
+	'content_model' => 'Galahad\\Medusa\\Models\\Content',
+	'content_table' => 'medusa_content',
 ];

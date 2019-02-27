@@ -1,10 +1,8 @@
 <?php
 
-use Galahad\Medusa\Medusa;
-
 if (!function_exists('medusa')) {
-	function medusa() : Medusa
+	function medusa() : Galahad\Medusa\Medusa
 	{
-		return app(Medusa::class);
+		return app('galahad.medusa');
 	}
 }

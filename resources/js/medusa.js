@@ -6,6 +6,10 @@ import App from './components/App';
 const HotApp = hot(App);
 
 const root = document.getElementById('medusa');
-const config = JSON.parse(root.dataset.config);
 
-ReactDOM.render(<HotApp config={config} />, root);
+const config = JSON.parse(root.dataset.config);
+const old = JSON.parse(root.dataset.old);
+const errors = JSON.parse(root.dataset.errors);
+const existing = JSON.parse(root.dataset.existing);
+
+ReactDOM.render(<HotApp config={config} existing={existing} old={old} server_errors={errors} />, root);

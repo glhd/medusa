@@ -21,4 +21,20 @@ abstract class ContentType implements ContentTypeContract
 	{
 		return false;
 	}
+	
+	public function getRouteKey()
+	{
+		return $this->getId();
+	}
+	
+	public function getRouteKeyName()
+	{
+		return 'id';
+	}
+	
+	public function resolveRouteBinding($value)
+	{
+		return medusa()->resolveContentType($value);
+	}
+	
 }

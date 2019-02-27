@@ -1,9 +1,9 @@
 import React from 'react';
 
 export default (props) => {
-	const { name, errors, label, initial_value, value, onChange } = props;
+	const { name, errors, label, initial_value, existing, value, onChange } = props;
 	const id = `medusa-${ name }`;
-	const dirty = initial_value !== value;
+	const dirty = existing ? existing !== value : initial_value !== value;
 	
 	return (
 		<div className="py-4">

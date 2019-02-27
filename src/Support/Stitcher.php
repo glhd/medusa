@@ -57,6 +57,10 @@ class Stitcher implements Jsonable
 	public function toJson($options = 0)
 	{
 		return json_encode([
+			'content_type' => [
+				'id' => $this->content_type->getId(),
+				'title' => $this->content_type->getTitle(),
+			],
 			'fields' => $this->getFields(),
 			'rules' => $this->getRules(),
 			// TODO: messages
