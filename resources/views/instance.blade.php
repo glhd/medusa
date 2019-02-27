@@ -1,10 +1,11 @@
+<?php /** @var \Illuminate\Support\ViewErrorBag $errors */ ?>
 
 <div
 	id="medusa"
-	data-config="{{ $stitched->toJson() }}"
-	data-old="{{ json_encode(old()) }}"
-	data-errors="{{ json_encode($errors->getBag('default')) }}"
-	data-existing="{{ json_encode($content->data ?? []) }}"
+	data-config="{{ $stitched->toJson(JSON_FORCE_OBJECT) }}"
+	data-old="{{ json_encode(old('data', []),  JSON_FORCE_OBJECT) }}"
+	data-errors="{{ json_encode($errors->getBag('default'),  JSON_FORCE_OBJECT) }}"
+	data-existing="{{ json_encode($content->data ?? [],  JSON_FORCE_OBJECT) }}"
 ></div>
 
 @if($inline)

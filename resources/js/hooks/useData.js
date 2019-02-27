@@ -1,27 +1,40 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
-export default (fields, old, existing) => {
-	const [data, setData] = useState(() => {
-		const data = {};
-		const old_data = ('data' in old) ? JSON.parse(old.data) : {};
+export default (fields, initial) => {
+	const [data, setData] = useState(initial);
+	const [touched, setTouched] = useState(() => {
+		const touched = {};
 		
-		Object.values(fields).forEach(field => {
-			data[field.name] = field.initial_value;
+		Object.keys(initial).forEach(key => {
+			touched[key] = false;
 		});
 		
-		return {
-			...data,
-			...existing,
-			...old_data,
-		};
+		return touched;
 	});
+	
+	const changed = useMemo(() => {
+		const changed = {};
+		
+		Object.entries(initial).forEach(([key, value]) => {
+			changed[key] = (key in data && value !== data[key]);
+		});
+		
+		return changed;
+	}, [data, initial]);
 	
 	const onChange = (name) => (value) => {
 		setData({
 			...data,
 			[name]: value,
 		});
+		
+		if (!touched[name]) {
+			setTouched({
+				...touched,
+				[name]: true,
+			});
+		}
 	};
 	
-	return [data, onChange];
+	return [data, changed, touched, onChange];
 };

@@ -1,18 +1,11 @@
 import React from 'react';
+import Group from '../Form/Group';
 
-export default (props) => {
-	const { name, errors, label, initial_value, existing, value, onChange } = props;
-	const { url_prefix } = props.config;
-	
-	const id = `medusa-${ name }`;
-	const dirty = existing ? existing !== value : initial_value !== value;
-	
+export default function Slug(props) {
+	const { config, id, value, onChange } = props;
+	const { url_prefix } = config;
 	return (
-		<div className="py-4">
-			<label className="block bold mb-2" htmlFor={ id }>
-				{ label }
-				{ dirty && <span className="ml-1 text-grey-light text-sm">(changed)</span> }
-			</label>
+		<Group {...props}>
 			<div className="flex items-center shadow appearance-none border rounded w-full py-2 px-3 text-grey-darkest leading-tight">
 				<label htmlFor={ id }>
 					{ url_prefix }
@@ -20,19 +13,10 @@ export default (props) => {
 				<input
 					className="flex-1 text-grey-dark"
 					id={ id }
-					value={ props.value }
+					value={ value }
 					onChange={ e => onChange(e.target.value) }
 				/>
 			</div>
-			{ (dirty && errors.length > 0) && (
-				<ul className="list-reset mt-2">
-					{ errors.map((error, i) => (
-						<li key={ i } className="text-red mb-1">
-							{ error }
-						</li>
-					)) }
-				</ul>
-			) }
-		</div>
+		</Group>
 	);
 };

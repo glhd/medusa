@@ -18,7 +18,7 @@ class ContentRequest extends FormRequest
 	public function authorize()
 	{
 		// $content = $this->route('content');
-		// Gate::authorize($this->permission(), [$content ?? Content::class, $this->contentType()]);
+		// Gate::authorize($content ? 'update' : 'create', [$content ?? Content::class, $this->contentType()]);
 		return true; // FIXME
 	}
 	
@@ -55,7 +55,7 @@ class ContentRequest extends FormRequest
 			if ($content_validator->fails()) {
 				foreach ($content_validator->messages()->messages() as $key => $messages) {
 					foreach ($messages as $message) {
-						$content_validator->messages()->add($key, $message);
+						$validator->messages()->add($key, $message);
 					}
 				}
 			}
@@ -64,48 +64,10 @@ class ContentRequest extends FormRequest
 	
 	public function rules()
 	{
+		// TODO: Singleton and uniques
 		return [
 			'content_type' => 'required',
 			'data' => 'required|json',
 		];
-	}
-	
-	protected function permission() : string
-	{
-		switch ($this->route()->getName()) {
-			case 'medusa.index':
-				return 'view';
-			
-			case 'medusa.create':
-			case 'medusa.store':
-				return 'create';
-			
-			case 'medusa.show':
-				return 'view';
-			
-			case 'medusa.edit':
-			case 'medusa.update':
-				return 'update';
-			
-			case 'medusa.destroy':
-				return 'delete';
-		}
-		
-		switch ($this->method()) {
-			case 'GET':
-				return 'view';
-			
-			case 'POST':
-				return 'create';
-			
-			case 'PUT':
-			case 'PATCH':
-				return 'update';
-			
-			case 'DELETE':
-				return 'delete';
-		}
-		
-		throw new \RuntimeException('Unable to infer permission.');
 	}
 }

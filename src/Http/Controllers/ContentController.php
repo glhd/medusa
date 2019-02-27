@@ -5,14 +5,8 @@ namespace Galahad\Medusa\Http\Controllers;
 use Galahad\Medusa\Contracts\Content;
 use Galahad\Medusa\Http\Middleware\Authorize;
 use Galahad\Medusa\Http\Middleware\DispatchMedusaEvent;
-use Galahad\Medusa\Http\Middleware\ServeInterface;
 use Galahad\Medusa\Http\Requests\ContentRequest;
-use Galahad\Medusa\Validation\ContentValidator;
-use Illuminate\Contracts\Translation\Translator;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Routing\Middleware\SubstituteBindings;
 
 class ContentController extends Controller
 {
@@ -21,7 +15,6 @@ class ContentController extends Controller
 		$this->middleware([
 			DispatchMedusaEvent::class,
 			Authorize::class,
-			ServeInterface::class,
 		]);
 	}
 	

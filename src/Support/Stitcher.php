@@ -43,6 +43,7 @@ class Stitcher implements Jsonable
 			->toBase()
 			->mapWithKeys(function(Field $field) {
 				return [$field->getName() => [
+					'id' => 'medusa-'.$field->getName(),
 					'component' => $field->getComponent(),
 					'name' => $field->getName(),
 					'display_name' => $field->getDisplayName(),

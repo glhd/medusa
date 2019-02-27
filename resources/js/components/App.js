@@ -1,23 +1,24 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import Debugger from './Debugger';
 import Fields from './Fields';
 import useData from '../hooks/useData';
 import useDependencies from '../hooks/useDependencies';
 import useValidation from '../hooks/useValidation';
 
-// TODO: Better dirty tracking
+const MedusaContext = React.createContext({});
 
 export default ({ config, existing, old, server_errors }) => {
-	const [data, onChange] = useData(config.fields, old, existing);
+	const initial_data = initialData(config.fields, existing, old);
+	const [data, changed, touched, onChange] = useData(config.fields, initial_data);
 	const [dependencies, onDependencies] = useDependencies();
-	const errors = useValidation(data, config.rules, server_errors);
+	const errors = useValidation(data, config.rules, touched, server_errors);
 	
 	const creating = 0 === Object.keys(existing).length;
 	
-	// TODO: track dirty state and show server errors until the user changes something
+	const context = { data, changed, touched, errors, onChange, onDependencies };
 	
 	return (
-		<div>
+		<MedusaContext.Provider value={context}>
 			<h1>
 				{ creating ? 'Create New' : 'Update' } { config.content_type.title }
 			</h1>
@@ -26,6 +27,8 @@ export default ({ config, existing, old, server_errors }) => {
 				fields={config.fields}
 				existing={existing}
 				data={data}
+				changed={changed}
+				touched={touched}
 				errors={errors}
 				onChange={onChange}
 				onDependencies={onDependencies}
@@ -37,7 +40,7 @@ export default ({ config, existing, old, server_errors }) => {
 				{/*</div>*/}
 			{/*) }*/}
 			
-			{/*<Debugger existing={existing} data={data} />*/}
+			{/*<Debugger changed={changed} touched={touched} />*/}
 			{/*<Debugger {...data} />*/}
 			{/*<Debugger {...server_errors} />*/}
 			
@@ -49,6 +52,22 @@ export default ({ config, existing, old, server_errors }) => {
 					{ creating ? 'Create' : 'Save Changes to' } { config.content_type.title }
 				</button>
 			</div>
-		</div>
+		</MedusaContext.Provider>
 	);
 };
+
+function initialData(fields, existing, old) {
+	return useMemo(() => {
+		const data = {};
+		
+		Object.values(fields).forEach(field => {
+			data[field.name] = field.initial_value;
+		});
+		
+		return {
+			...data,
+			...existing,
+			...old,
+		};
+	}, [fields, existing, old]);
+}
