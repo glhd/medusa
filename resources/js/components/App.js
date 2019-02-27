@@ -1,33 +1,33 @@
-import React, { useState } from 'react';
+import React from 'react';
+import Debugger from './Debugger';
+import Fields from './Fields';
+import useData from '../hooks/useData';
+import useDependencies from '../hooks/useDependencies';
+import useValidation from '../hooks/useValidation';
 
-const load = require.context('./Fields', false, /^(?!.*\.stories\.js$).*\.js$/i);
+// TODO: Better dirty tracking
 
 export default ({ config }) => {
-	const [data, setData] = useState(() => {
-		const data = {};
-		
-		Object.values(config.fields).forEach(field => {
-			data[field.name] = field.initial_value;
-		});
-		
-		return data;
-	});
-	
-	const fields = Object.values(config.fields)
-		.map(field => {
-			const Field = load('./' + field.component + '.js').default;
-			const onChange = (value) => setData({
-				...data,
-				[field.name]: value,
-			});
-			return <Field key={field.name} { ...field } value={data[field.name]} onChange={onChange} />;
-		});
+	const [data, onChange] = useData(config.fields);
+	const [dependencies, onDependencies] = useDependencies();
+	const errors = useValidation(data, config.rules);
 	
 	return (
 		<div>
-			{ fields }
-			<pre className="bg-grey-lightest border shadow-lg text-xs text-grey-darker font-mono rounded p-8 my-8">{ JSON.stringify(data, null, 2) }</pre>
-			<pre className="bg-grey-lightest border shadow-lg text-xs text-grey-darker font-mono rounded p-8 my-8">{ JSON.stringify(config.rules, null, 2) }</pre>
+			<Fields
+				fields={config.fields}
+				data={data}
+				errors={errors}
+				onChange={onChange}
+				onDependencies={onDependencies}
+			/>
+			{ Object.keys(errors).length > 0 && (
+				<div className="border border-red rounded bg-red-lightest text-red p-4">
+					There are errors on this page that you must fix before saving.
+				</div>
+			) }
+			<Debugger {...data} />
+			<Debugger {...dependencies} />
 		</div>
 	);
 };
