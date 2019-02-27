@@ -11,7 +11,11 @@ interface Content extends UrlRoutable
 	
 	public function getContentType() : ContentType;
 	
+	public function setContentType(ContentType $content_type) : Content;
+	
 	public function getData() : array;
+	
+	public function setData(array $data) : Content;
 	
 	public function getDescription() : string;
 	
@@ -20,4 +24,6 @@ interface Content extends UrlRoutable
 	public function getSlug() : string;
 	
 	public function setSlug(string $description) : Content;
+	
+	public function save(array $options = []) : bool;
 }

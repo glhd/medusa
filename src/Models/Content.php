@@ -52,6 +52,13 @@ class Content extends Model implements ContentContract
 		return $this->content_type_instance;
 	}
 	
+	public function setContentType(ContentType $content_type) : ContentContract
+	{
+		$this->setContentTypeAttribute($content_type);
+		
+		return $this;
+	}
+	
 	protected function setContentTypeAttribute($content_type)
 	{
 		if ($content_type instanceof ContentType) {
@@ -66,4 +73,12 @@ class Content extends Model implements ContentContract
 	{
 		return $this->getAttribute('data');
 	}
+	
+	public function setData(array $data) : ContentContract
+	{
+		$this->setAttribute('data', $data);
+		
+		return $this;
+	}
+	
 }

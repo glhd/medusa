@@ -58,15 +58,9 @@ class ContentController extends Controller
 	 */
 	public function store(ContentRequest $request)
 	{
-		$data = json_decode($request->input('data'), true);
-		
 		$content = $this->newContentModel();
-		
-		$content->content_type = $request->contentType();
-		$content->data = $data;
-		
-		// TODO: slug, description, unique_key
-		
+		$content->setContentType($request->contentType());
+		$content->setData($request->contentData());
 		$content->save();
 		
 		return redirect()->route('medusa.show', $content);
@@ -105,12 +99,7 @@ class ContentController extends Controller
 	 */
 	public function update(ContentRequest $request, Content $content)
 	{
-		$data = json_decode($request->input('data'), true);
-		
-		$content->data = $data;
-		
-		// TODO: slug, description, unique_key
-		
+		$content->setData($request->contentData());
 		$content->save();
 		
 		return redirect()->route('medusa.show', $content);

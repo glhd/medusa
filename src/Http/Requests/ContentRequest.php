@@ -34,6 +34,11 @@ class ContentRequest extends FormRequest
 		return $this->content_type;
 	}
 	
+	public function contentData() : array
+	{
+		return json_decode($this->input('data'), true);
+	}
+	
 	public function withValidator(Validator $validator)
 	{
 		$validator->after(function() use ($validator) {
