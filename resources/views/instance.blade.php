@@ -2,10 +2,10 @@
 
 <div
 	id="medusa"
-	data-config="{{ $stitched->toJson(JSON_FORCE_OBJECT) }}"
-	data-old="{{ json_encode(old('data', []),  JSON_FORCE_OBJECT) }}"
-	data-errors="{{ json_encode($errors->getBag('default'),  JSON_FORCE_OBJECT) }}"
-	data-existing="{{ json_encode($content->data ?? [],  JSON_FORCE_OBJECT) }}"
+	data-config="{{ $stitched->toJson() }}"
+	data-old="{{ json_encode((object) old('data', [])) }}"
+	data-errors="{{ json_encode((object) $errors->getBag('default')->toArray()) }}"
+	data-existing="{{ json_encode($content->data ?? new stdClass()) }}"
 ></div>
 
 @if($inline)

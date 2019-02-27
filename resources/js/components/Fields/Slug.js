@@ -1,11 +1,14 @@
 import React from 'react';
 import Group from '../Form/Group';
+import useFieldContext from "../../hooks/useFieldContext";
 
 export default function Slug(props) {
-	const { config, id, value, onChange } = props;
+	const { config, field, id } = props;
+	const { value, onChange } = useFieldContext(field);
 	const { url_prefix } = config;
+	
 	return (
-		<Group {...props}>
+		<Group field={field}>
 			<div className="flex items-center shadow appearance-none border rounded w-full py-2 px-3 text-grey-darkest leading-tight">
 				<label htmlFor={ id }>
 					{ url_prefix }

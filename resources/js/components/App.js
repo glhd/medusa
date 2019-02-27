@@ -4,8 +4,7 @@ import Fields from './Fields';
 import useData from '../hooks/useData';
 import useDependencies from '../hooks/useDependencies';
 import useValidation from '../hooks/useValidation';
-
-const MedusaContext = React.createContext({});
+import { MedusaContext } from '../hooks/useMedusaContext';
 
 export default ({ config, existing, old, server_errors }) => {
 	const initial_data = initialData(config.fields, existing, old);
@@ -27,11 +26,6 @@ export default ({ config, existing, old, server_errors }) => {
 				fields={config.fields}
 				existing={existing}
 				data={data}
-				changed={changed}
-				touched={touched}
-				errors={errors}
-				onChange={onChange}
-				onDependencies={onDependencies}
 			/>
 			
 			{/*{ Object.keys(errors).length > 0 && (*/}

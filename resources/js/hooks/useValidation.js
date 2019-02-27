@@ -6,6 +6,8 @@ export default function useValidation(data, rules, touched = {}, server_errors =
 	const cycle = useRef(0);
 	const debounce = useRef(null);
 	
+	// FIXME: Server errors may have duplicates, and aren't showing because of changed/touched checks
+	
 	useEffect(() => {
 		clearTimeout(debounce.current);
 		debounce.current = setTimeout(() => {

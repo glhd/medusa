@@ -1,6 +1,10 @@
 import React from 'react';
+import useFieldContext from '../../hooks/useFieldContext';
 
-export default function Group({ id, label, changed, touched, errors, children }) {
+export default function Group({ field, children }) {
+	const { id, label } = field;
+	const { changed, touched, errors } = useFieldContext(field);
+	
 	return (
 		<div className="py-4">
 			<label className="block bold mb-2" htmlFor={ id }>
