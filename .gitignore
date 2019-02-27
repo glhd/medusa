@@ -5,4 +5,5 @@ npm-debug.log
 .idea/
 _ide_helper.php
 .phpstorm.meta.php
-hot
+resources/js/dist/hot
+resources/js/dist/mix-manifest.json

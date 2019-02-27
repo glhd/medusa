@@ -39,7 +39,7 @@ export default ({ config, existing, old, server_errors }) => {
 			
 			{/*<Debugger existing={existing} data={data} />*/}
 			{/*<Debugger {...data} />*/}
-			{/*<Debugger {...dependencies} />*/}
+			{/*<Debugger {...server_errors} />*/}
 			
 			<input name="content_type" type="hidden" value={ config.content_type.id } />
 			<input name="data" type="hidden" value={JSON.stringify(data)} />

@@ -6,6 +6,7 @@ use Galahad\Medusa\Contracts\Content;
 use Galahad\Medusa\Http\Middleware\Authorize;
 use Galahad\Medusa\Http\Middleware\DispatchMedusaEvent;
 use Galahad\Medusa\Http\Middleware\ServeInterface;
+use Galahad\Medusa\Http\Requests\ContentRequest;
 use Galahad\Medusa\Validation\ContentValidator;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Http\Request;
@@ -55,20 +56,13 @@ class ContentController extends Controller
 	 * @param  \Illuminate\Http\Request $request
 	 * @return \Illuminate\Http\Response
 	 */
-	public function store(Request $request)
+	public function store(ContentRequest $request)
 	{
-		$content_type = medusa()->resolveContentType($request->input('content_type'));
 		$data = json_decode($request->input('data'), true);
 		
-		$validator = new ContentValidator(app(Translator::class), $data, $content_type);
-		$validator->validate();
+		$content = $this->newContentModel();
 		
-		$content_class = config('medusa.content_model');
-		
-		/** @var \Galahad\Medusa\Models\Content $content */
-		$content = new $content_class();
-		
-		$content->content_type = $content_type;
+		$content->content_type = $request->contentType();
 		$content->data = $data;
 		
 		// TODO: slug, description, unique_key
@@ -109,16 +103,9 @@ class ContentController extends Controller
 	 * @param  \Galahad\Medusa\Contracts\Content $content
 	 * @return \Illuminate\Http\Response
 	 */
-	public function update(Request $request, Content $content)
+	public function update(ContentRequest $request, Content $content)
 	{
-		if ($content->getContentType()->getId() !== $request->input('content_type')) {
-			abort(Response::HTTP_UNPROCESSABLE_ENTITY);
-		}
-		
 		$data = json_decode($request->input('data'), true);
-		
-		$validator = new ContentValidator(app(Translator::class), $data, $content->getContentType());
-		$validator->validate();
 		
 		$content->data = $data;
 		
@@ -138,5 +125,14 @@ class ContentController extends Controller
 	public function destroy(Content $content)
 	{
 		//
+	}
+	
+	/**
+	 * @return \Galahad\Medusa\Contracts\Content|\Galahad\Medusa\Models\Content
+	 */
+	protected function newContentModel() : Content
+	{
+		$content_class = config('medusa.content_model');
+		return new $content_class();
 	}
 }
