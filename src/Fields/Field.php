@@ -3,7 +3,10 @@
 namespace Galahad\Medusa\Fields;
 
 use Galahad\Medusa\Contracts\Field as FieldContract;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationRuleParser;
+use InvalidArgumentException;
 
 abstract class Field implements FieldContract
 {
@@ -35,7 +38,7 @@ abstract class Field implements FieldContract
 	/**
 	 * @var array
 	 */
-	protected $rules;
+	protected $rules = [];
 	
 	/**
 	 * Define the default initial value for this field
@@ -55,8 +58,14 @@ abstract class Field implements FieldContract
 		$this->name = $name;
 		$this->display_name = Str::title(Str::snake($name, ' '));
 		$this->label = $this->display_name;
-		$this->initial_value = $this->defaultInitialValue();
-		$this->config = array_merge(['required' => false], $this->defaultConfig());
+		$this->initial_value = $this->defaultInitialValue(); // FIXME: This needs to be lazy, too
+		
+		if (null === $this->config) {
+			// FIXME: The ordering of all this needs to be sorted outs
+			$this->config = $this->defaultConfig();
+		}
+		
+		$this->configureRules(); // FIXME: Rules need to be lazily initialized so that config settings can affect rules
 	}
 	
 	public static function make($name) : self
@@ -128,9 +137,49 @@ abstract class Field implements FieldContract
 		return $this;
 	}
 	
+	/**
+	 * @param string|array $rules
+	 * @return \Galahad\Medusa\Fields\Field
+	 */
+	public function addRules($rules) : self
+	{
+		// TODO: Rule ordering matters… (esp. required/nullable/etc)
+		$name = $this->getName();
+		
+		if (is_string($rules)) {
+			$parsed = (new ValidationRuleParser([$name => $this->getInitialValue()]))
+				->explode([
+					$name => $rules,
+				]);
+			$rules = $parsed->rules;
+		}
+		
+		if (!is_array($rules)) {
+			throw new InvalidArgumentException(static::class.'::addRules() must be passed a string or array.');
+		}
+		
+		if (!Arr::isAssoc($rules)) {
+			$rules = [$name => $rules];
+		}
+		
+		foreach ($rules as $key => $value) {
+			if ($name !== $key && 0 !== strpos($key, "{$name}.")) {
+				$key = "{$name}.{$key}";
+			}
+			
+			if (!isset($this->rules[$key])) {
+				$this->rules[$key] = $value;
+			} else {
+				$this->rules[$key] = array_merge($this->rules[$key], $value);
+			}
+		}
+		
+		return $this;
+	}
+	
 	public function getRules() : array
 	{
-		return $this->rules ?? $this->commonlyConfiguredRules();
+		return $this->rules;
 	}
 	
 	public function getMessages() : array
@@ -138,9 +187,9 @@ abstract class Field implements FieldContract
 		return [];
 	}
 	
-	public function setRequired(bool $required = true) : self
+	public function setRequired() : self
 	{
-		$this->config['required'] = $required;
+		$this->addRules(['required']);
 		
 		return $this;
 	}
@@ -155,14 +204,13 @@ abstract class Field implements FieldContract
 		return [];
 	}
 	
-	protected function commonlyConfiguredRules() : array
+	/**
+	 * Override this to configure field rules
+	 *
+	 * @return mixed
+	 */
+	protected function configureRules()
 	{
-		$rules = [];
-		
-		if ($this->config['required']) {
-			$rules[] = 'required';
-		}
-		
-		return $rules;
+		//
 	}
 }

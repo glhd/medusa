@@ -29,21 +29,7 @@ class Stitcher
 			$this->rules = $this->content_type->getFields()
 				->toBase()
 				->map(function(Field $field) {
-					$name = $field->getName();
-					$rules = $field->getRules();
-					
-					if (!Arr::isAssoc($rules)) {
-						return ["data.{$name}" => $rules];
-					}
-					
-					$keys = array_map(function($key) use ($name) {
-						if ($name !== $key && 0 !== strpos($key, "{$name}.")) {
-							$key = "{$name}.{$key}";
-						}
-						return "data.{$key}";
-					}, array_keys($rules));
-					
-					return array_combine($keys, array_values($rules));
+					return $field->getRules();
 				})
 				->collapse()
 				->toArray();

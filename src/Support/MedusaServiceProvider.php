@@ -24,12 +24,12 @@ class MedusaServiceProvider extends ServiceProvider
 	{
 		require_once rtrim(__DIR__, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'helpers.php';
 		
-		$this->bootConfig();
-		
-		$this->bootPermissions($this->app->make(Gate::class));
-		$this->bootRoutes($this->app->make(Registrar::class));
-		$this->bootBlade($this->app->make(BladeCompiler::class));
-		$this->bootViews();
+		$this->bootConfig()
+			->bootPermissions($this->app->make(Gate::class))
+			->bootRoutes($this->app->make(Registrar::class))
+			->bootBlade($this->app->make(BladeCompiler::class))
+			->bootViews()
+			->bootMigrations();
 	}
 	
 	/**
@@ -70,7 +70,7 @@ class MedusaServiceProvider extends ServiceProvider
 	 *
 	 * @param \Illuminate\Contracts\Auth\Access\Gate $gate
 	 */
-	protected function bootPermissions(Gate $gate) : void
+	protected function bootPermissions(Gate $gate) : self
 	{
 		$gate->define('_viewMedusa', function() use ($gate) {
 			if ($gate->has('viewMedusa')) {
@@ -79,6 +79,8 @@ class MedusaServiceProvider extends ServiceProvider
 			
 			return $this->app->isLocal();
 		});
+		
+		return $this;
 	}
 	
 	protected function bootConfig() : self
@@ -129,6 +131,17 @@ class MedusaServiceProvider extends ServiceProvider
 			$this->publishes([
 				$path => $this->app->resourcePath('views/vendor/medusa'),
 			], 'medusa-views');
+		}
+		
+		return $this;
+	}
+	
+	protected function bootMigrations() : self
+	{
+		if (method_exists($this->app, 'databasePath')) {
+			$this->publishes([
+				$this->basePath('migrations/') => $this->app->databasePath('migrations')
+			], 'medusa-migrations');
 		}
 		
 		return $this;
