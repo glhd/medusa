@@ -64,7 +64,7 @@ class MedusaView implements Htmlable
 	{
 		$view_data = [
 			'content_type' => $this->content_type,
-			'rules' => (new Stitcher($this->content_type))->getRules(),
+			'stitched' => new Stitcher($this->content_type),
 			'content' => $this->content,
 		];
 		

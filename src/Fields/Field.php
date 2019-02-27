@@ -73,6 +73,11 @@ abstract class Field implements FieldContract
 		return new static($name);
 	}
 	
+	public function getComponent() : string
+	{
+		return class_basename(static::class);
+	}
+	
 	/**
 	 * @return string
 	 */

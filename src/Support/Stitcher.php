@@ -4,10 +4,9 @@ namespace Galahad\Medusa\Support;
 
 use Galahad\Medusa\Contracts\ContentType;
 use Galahad\Medusa\Contracts\Field;
-use Illuminate\Support\Arr;
-use Illuminate\Validation\ValidationRuleParser;
+use Illuminate\Contracts\Support\Jsonable;
 
-class Stitcher
+class Stitcher implements Jsonable
 {
 	/**
 	 * @var \Galahad\Medusa\Contracts\ContentType
@@ -36,6 +35,32 @@ class Stitcher
 		}
 		
 		return $this->rules;
+	}
+	
+	public function getFields() : array
+	{
+		return $this->content_type->getFields()
+			->toBase()
+			->mapWithKeys(function(Field $field) {
+				return [$field->getName() => [
+					'component' => $field->getComponent(),
+					'name' => $field->getName(),
+					'display_name' => $field->getDisplayName(),
+					'label' => $field->getLabel(),
+					'config' => $field->getConfig(),
+					'initial_value' => $field->getInitialValue(),
+				]];
+			})
+			->toArray();
+	}
+	
+	public function toJson($options = 0)
+	{
+		return json_encode([
+			'fields' => $this->getFields(),
+			'rules' => $this->getRules(),
+			// TODO: messages
+		], $options);
 	}
 	
 	/**

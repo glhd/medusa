@@ -5,6 +5,13 @@ namespace Galahad\Medusa\Contracts;
 interface Field
 {
 	/**
+	 * Get the name of the component that renders this field
+	 *
+	 * @return string
+	 */
+	public function getComponent() : string;
+	
+	/**
 	 * The name that will be used to store this field
 	 *
 	 * @return string

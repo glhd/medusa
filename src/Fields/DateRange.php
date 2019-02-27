@@ -31,10 +31,10 @@ class DateRange extends Field
 	protected function configureRules()
 	{
 		$this->addRules([
-			'start.month' => 'integer|between:1,12',
-			'start.day' => 'integer|between:1,31',
-			'end.month' => 'integer|between:1,12',
-			'end.day' => 'integer|between:1,31',
+			'start.month' => ['integer', 'between:1,12'],
+			'start.day' => ['integer', 'between:1,31'],
+			'end.month' => ['integer', 'between:1,12'],
+			'end.day' => ['integer', 'between:1,31'],
 		]);
 	}
 }

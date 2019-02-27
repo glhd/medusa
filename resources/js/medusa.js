@@ -5,4 +5,7 @@ import App from './components/App';
 
 const HotApp = hot(App);
 
-ReactDOM.render(<HotApp />, document.getElementById('medusa'));
+const root = document.getElementById('medusa');
+const config = JSON.parse(root.dataset.config);
+
+ReactDOM.render(<HotApp config={config} />, root);
