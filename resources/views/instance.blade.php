@@ -8,7 +8,9 @@
 ></div>
 
 @if($inline)
-	<script>{{ $script }}</script>
+	<script>
+	<?php echo e($script); ?>
+	</script>
 @else
 	<script src="{{ $src }}"></script>
 @endif

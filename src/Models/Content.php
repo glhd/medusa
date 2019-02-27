@@ -81,4 +81,8 @@ class Content extends Model implements ContentContract
 		return $this;
 	}
 	
+	public function save(array $options = []) : bool
+	{
+		return parent::save($options);
+	}
 }
