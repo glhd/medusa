@@ -10,6 +10,7 @@
 		<table class="w-full">
 			<thead>
 				<tr>
+					<th class="border-b p-2 font-bold">Type</th>
 					<th class="border-b p-2 font-bold">Slug</th>
 					<th class="border-b p-2 font-bold">Description</th>
 					<th class="border-b p-2 font-bold"></th>
@@ -18,6 +19,9 @@
 			<tbody>
 				@foreach($content_page as $content)
 					<tr>
+						<td class="p-2">
+							{{ $content->getContentType()->getTitle() }}
+						</td>
 						<td class="p-2">
 							<span class="font-mono text-sm p-1 border rounded bg-grey-lightest text-grey-dark">
 								{{ $content->getSlug() }}
