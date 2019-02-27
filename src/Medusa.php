@@ -2,11 +2,15 @@
 
 namespace Galahad\Medusa;
 
+use Galahad\Medusa\Concerns\ResolvesContentTypes;
+use Galahad\Medusa\Contracts\Field;
 use Galahad\Medusa\Events\ServingMedusa;
 use Illuminate\Contracts\Events\Dispatcher;
 
 class Medusa
 {
+	use ResolvesContentTypes;
+	
 	/**
 	 * @var array
 	 */

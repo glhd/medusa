@@ -3,9 +3,13 @@
 namespace Galahad\Medusa\View;
 
 use Galahad\Medusa\Contracts\Content;
+use Galahad\Medusa\Contracts\ContentType;
+use Galahad\Medusa\Contracts\ContentTypeResolver;
+use Galahad\Medusa\Support\Stitcher;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\HtmlString;
+use InvalidArgumentException;
 
 class MedusaView implements Htmlable
 {
@@ -25,24 +29,42 @@ class MedusaView implements Htmlable
 	protected $content;
 	
 	/**
+	 * @var \Galahad\Medusa\Contracts\ContentType
+	 */
+	protected $content_type;
+	
+	/**
 	 * MedusaView constructor.
 	 *
+	 * @param \Galahad\Medusa\Contracts\ContentTypeResolver $resolver
 	 * @param \Illuminate\Contracts\View\Factory $view_factory
 	 * @param string $base_path
 	 * @param string|Content $content
 	 */
-	public function __construct(Factory $view_factory, string $base_path, $content = null)
+	public function __construct(ContentTypeResolver $resolver, Factory $view_factory, string $base_path, $content)
 	{
-		// TODO: Handle content type as 3rd prop
-		
 		$this->view_factory = $view_factory;
 		$this->base_path = $base_path;
-		$this->content = $content;
+		
+		if ($content instanceof Content) {
+			$this->content = $content;
+			$this->content_type = $content->getContentType();
+		} else if ($content instanceof ContentType) {
+			$this->content_type = $content;
+		} else if (is_string($content)) {
+			$this->content_type = $resolver->resolve($content);
+		}
+		
+		if (!($this->content_type instanceof ContentType)) {
+			throw new InvalidArgumentException('You must pass a Content Type or a Content instance to '.__CLASS__);
+		}
 	}
 	
 	public function toHtml() : string
 	{
 		$view_data = [
+			'content_type' => $this->content_type,
+			'rules' => (new Stitcher($this->content_type))->getRules(),
 			'content' => $this->content,
 		];
 		

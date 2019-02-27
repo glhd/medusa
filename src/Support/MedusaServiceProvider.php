@@ -3,21 +3,20 @@
 namespace Galahad\Medusa\Support;
 
 use Galahad\Medusa\Contracts\Content;
+use Galahad\Medusa\Contracts\ContentTypeResolver;
 use Galahad\Medusa\Exceptions\ConfigurationException;
 use Galahad\Medusa\Http\Controllers\ContentController;
-use Galahad\Medusa\Http\Middleware\Authorize;
-use Galahad\Medusa\Http\Middleware\DispatchMedusaEvent;
-use Galahad\Medusa\Http\Middleware\ServeInterface;
 use Galahad\Medusa\Medusa;
+use Galahad\Medusa\Resolvers\ConventionalResolver;
+use Galahad\Medusa\View\MedusaView;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\Registrar;
-use Illuminate\Routing\Router;
-use Illuminate\Routing\RouteRegistrar;
-use Illuminate\Support\Arr;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\View\Compilers\BladeCompiler;
 
 class MedusaServiceProvider extends ServiceProvider
 {
@@ -29,6 +28,8 @@ class MedusaServiceProvider extends ServiceProvider
 		
 		$this->bootPermissions($this->app->make(Gate::class));
 		$this->bootRoutes($this->app->make(Registrar::class));
+		$this->bootBlade($this->app->make(BladeCompiler::class));
+		$this->bootViews();
 	}
 	
 	/**
@@ -38,11 +39,17 @@ class MedusaServiceProvider extends ServiceProvider
 	{
 		$this->mergeConfigFrom($this->basePath('config/medusa.php'), 'medusa');
 		
+		$this->app->singleton('galahad.medusa.resolver', function(Application $app) {
+			return new ConventionalResolver($app);
+		});
+		
+		$this->app->alias('galahad.medusa.resolver', ContentTypeResolver::class);
+		
 		$this->app->singleton('galahad.medusa', function(Application $app) {
-			return new Medusa(
+			return (new Medusa(
 				$app->make(Dispatcher::class),
 				$app['config']['medusa']
-			);
+			))->setContentTypeResolver($app->make('galahad.medusa.resolver'));
 		});
 		
 		$this->app->alias('galahad.medusa', Medusa::class);
@@ -96,6 +103,33 @@ class MedusaServiceProvider extends ServiceProvider
 		$registrar->group($group, function() use ($registrar) {
 			$registrar->resource('content', ContentController::class);
 		});
+		
+		return $this;
+	}
+	
+	protected function bootBlade(BladeCompiler $compiler) : self
+	{
+		$compiler->directive('medusa', function ($expression) {
+			$view_class = MedusaView::class;
+			$factory_class = Factory::class;
+			$base_path = $this->basePath();
+			return "<?php echo (new {$view_class}(app('galahad.medusa.resolver'), app({$factory_class}::class), '{$base_path}', $expression)); ?>";
+		});
+		
+		return $this;
+	}
+	
+	protected function bootViews() : self
+	{
+		$path = $this->basePath('resources/views');
+		
+		$this->loadViewsFrom($path, 'medusa');
+		
+		if (method_exists($this->app, 'resourcePath')) {
+			$this->publishes([
+				$path => $this->app->resourcePath('views/vendor/medusa'),
+			], 'medusa-views');
+		}
 		
 		return $this;
 	}
