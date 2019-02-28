@@ -10,10 +10,10 @@ export default function useFields(fields) {
 		return Object.values(fields)
 			.map(field => {
 				if (field.component in registry) {
-					return [
-						registry[field.component],
-						mapFieldProps(field, medusa)
-					];
+					return {
+						Field: registry[field.component],
+						props: mapFieldProps(field, medusa),
+					};
 				}
 				
 				throw `Unable to find field component "${field.component}"`;

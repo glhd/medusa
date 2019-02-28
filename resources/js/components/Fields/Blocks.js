@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import useFields from "../../hooks/useFields";
 import Group from "../Form/Group";
@@ -7,52 +7,56 @@ const BlocksContext = React.createContext({});
 const useBlockContext = () => useContext(BlocksContext);
 
 export default function Blocks(props) {
-	const [blocks, setBlocks] = useState([]);
-	
-	const { field, value, onChange } = props;
+	const { field, value: block_values, onChange } = props;
 	const fields = useFields(field.config.fields);
+	
+	const [blocks, setBlocks] = useState(() => block_values.map(value_config => {
+		const { id, component, name } = value_config;
+		const field = fields.find(({ props }) => {
+			return props.field.component === component
+				&& props.field.name === name;
+		});
+		return { ...field, key: id };
+	}));
 	
 	// FIXME: This needs to handle its own validation
 	
-	const addBlock = (Field, props) => {
-		const next_block = {
-			Field,
-			props,
-			key: uuid(),
-		};
-		
-		const next_value = {
-			id: next_block.key,
-			name: props.field.name,
-			config: props.field.config,
-			value: props.field.initial_value,
-		};
-		
-		setBlocks([...blocks, next_block]);
-		onChange([...value, next_value]);
+	const context = {
+		block_values,
+		blocks,
+		onAdd: (Field, props) => {
+			const key = uuid();
+			const addition = { key, Field, props };
+			const { name, component, config, initial_value } = props.field;
+			const value = { id: key, value: initial_value, name, component, config };
+			
+			setBlocks([...blocks, addition]);
+			onChange([...block_values, value]);
+		},
+		onChange: (index, value) => {
+			const changed = [...block_values];
+			changed[index].value = value;
+			onChange(changed);
+		},
+		onDelete: (index) => {
+			setBlocks(reorder(blocks, index));
+			onChange(reorder(block_values, index));
+		},
 	};
-	
-	const onDragEnd = ({ source, destination }) => {
-		if (!destination) {
-			return;
-		}
-		setBlocks(reorder(blocks, source.index, destination.index));
-		onChange(reorder(value, source.index, destination.index));
-	};
-	
-	const onDelete = (index) => {
-		setBlocks(reorder(blocks, index, null));
-		onChange(reorder(value, index, null));
-	};
-	
-	const context = { value, blocks, addBlock, onChange, onDelete };
 	
 	return (
-		<BlocksContext.Provider value={context}>
+		<BlocksContext.Provider value={ context }>
 			<Group { ...props }>
 				<div className="border rounded p-2">
 					<FieldButtons fields={ fields } />
-					<BlockFields onDragEnd={onDragEnd} />
+					<BlockFields
+						onDragEnd={ ({ source, destination }) => {
+							if (destination && destination.index !== source.index) {
+								setBlocks(reorder(blocks, source.index, destination.index));
+								onChange(reorder(block_values, source.index, destination.index));
+							}
+						} }
+					/>
 				</div>
 			</Group>
 		</BlocksContext.Provider>
@@ -60,14 +64,14 @@ export default function Blocks(props) {
 };
 
 const FieldButtons = ({ fields }) => {
-	const { addBlock } = useBlockContext();
+	const { onAdd } = useBlockContext();
 	return (
 		<div className="-mx-2">
-			{ fields.map(([Field, props]) => (
+			{ fields.map(({ Field, props }) => (
 				<button
 					key={ props.field.name }
 					className="mx-2 bg-grey-lightest text-grey-dark border rounded px-4 py-2"
-					onClick={ e => e.preventDefault() || addBlock(Field, props) }>
+					onClick={ e => e.preventDefault() || onAdd(Field, props) }>
 					Add { props.field.display_name }
 				</button>
 			)) }
@@ -78,38 +82,41 @@ const FieldButtons = ({ fields }) => {
 const BlockFields = ({ onDragEnd }) => {
 	return (
 		<DragDropContext onDragEnd={ onDragEnd }>
-			<Droppable droppableId="fields">
-				{ (provided, snapshot) => <BlockList provided={provided} snapshot={snapshot} /> }
+			<Droppable droppableId="block_fields">
+				{ (provided, snapshot) => <BlockList provided={ provided } snapshot={ snapshot } /> }
 			</Droppable>
 		</DragDropContext>
 	);
 };
 
 const BlockList = ({ provided, snapshot }) => {
-	const { blocks } = useBlockContext();
+	const { blocks, block_values } = useBlockContext();
+	const { innerRef, placeholder } = provided;
+	const { isDraggingOver } = snapshot;
+	
 	return (
-		<div ref={ provided.innerRef } className={ snapshot.isDraggingOver ? 'bg-blue-lightest' : '' }>
+		<div ref={ innerRef } className={ isDraggingOver ? 'bg-blue-lightest' : '' }>
 			{ blocks.map((block, index) => (
 				<Draggable key={ block.key } draggableId={ block.key } index={ index }>
-					{ (provided, snapshot) => <BlockField block={block} index={index} provided={provided} snapshot={snapshot} /> }
+					{ (provided, snapshot) => <BlockField
+						block={ block }
+						index={ index }
+						provided={ provided }
+						snapshot={ snapshot }
+						value={ block_values[index].value }
+					/> }
 				</Draggable>
 			)) }
-			{ provided.placeholder }
+			{ placeholder }
 		</div>
 	);
 };
 
-const BlockField = ({ index, block, provided, snapshot }) => {
+const BlockField = ({ index, block, value, provided, snapshot }) => {
 	const { Field, props, key } = block;
-	const { value, onChange, onDelete, addBlock } = useBlockContext();
+	const { onChange, onDelete, onAdd } = useBlockContext();
 	const { innerRef, draggableProps, dragHandleProps } = provided;
 	const { isDragging } = snapshot;
-	
-	const onBlockChange = (block_value) => {
-		const next_value = [...value];
-		next_value[index].value = block_value;
-		onChange(next_value);
-	};
 	
 	const onBlockDelete = (e) => {
 		e.preventDefault();
@@ -123,20 +130,20 @@ const BlockField = ({ index, block, provided, snapshot }) => {
 		e.preventDefault();
 		
 		if (confirm('Are you sure you want to clone this block?')) {
-			addBlock(Field, {
+			onAdd(Field, {
 				...props,
 				field: {
 					...props.field,
-					initial_value: value[index].value,
+					initial_value: value,
 				}
 			});
 		}
 	};
 	
-	const className = `flex rounded bg-white my-2 overflow-hidden ${ isDragging ? 'border shadow-lg' : '' }`
+	const className = `flex rounded bg-white my-2 overflow-hidden ${ isDragging ? 'border shadow-lg' : '' }`;
 	
 	return (
-		<div className={ className } ref={ innerRef } { ...draggableProps } style={ draggableProps.style }>
+		<div className={ className } ref={ innerRef } { ...draggableProps }>
 			<div
 				style={ {
 					width: '16px',
@@ -149,7 +156,13 @@ const BlockField = ({ index, block, provided, snapshot }) => {
 				{ ...dragHandleProps }
 			/>
 			<div className="flex-1 pr-2">
-				<Field { ...props } value={ value[index].value } key={ key } onChange={ onBlockChange } />
+				<Field
+					{ ...props }
+					field={ { ...props.field, id: `${props.field.id}-${key}` } }
+					key={ key }
+					value={ value }
+					onChange={ value => onChange(index, value) }
+				/>
 			</div>
 			<div className="flex flex-col justify-center items-center px-4 ml-4 border-l border-grey-lighter">
 				<button
@@ -169,20 +182,18 @@ const BlockField = ({ index, block, provided, snapshot }) => {
 	);
 };
 
-function uuid(a) {
-	return a
-		? (a ^ Math.random() * 16 >> a / 4).toString(16)
-		: ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
-}
+const uuid = a => a
+	? (a ^ Math.random() * 16 >> a / 4).toString(16)
+	: ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, uuid);
 
-function reorder(list, from, to) {
+const reorder = (list, from, to = null) => {
 	const result = Array.from(list);
 	const [removed] = result.splice(from, 1);
 	if (null !== to) {
 		result.splice(to, 0, removed);
 	}
 	return result;
-}
+};
 
 // Font Awesome License - https://fontawesome.com/license
 

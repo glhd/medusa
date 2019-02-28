@@ -6,8 +6,8 @@
 	<title>Medusa</title>
 	<link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet" />
 </head>
-<body>
-<div class="bg-grey-lightest border-b p-2 mb-4">
+<body class="font-sans antialias">
+<div class="bg-grey-lightest border-b p-2">
 	<div class="container mx-auto flex items-baseline">
 		<h1 class="text-lg font-normal mr-4">
 			<a class="no-underline text-grey-dark hover:underline" href="{{ route('medusa.index') }}">
@@ -25,7 +25,7 @@
 		</ul>
 	</div>
 </div>
-<div class="container mx-auto">
+<div class="container mx-auto py-8">
 	@yield('content')
 </div>
 </body>

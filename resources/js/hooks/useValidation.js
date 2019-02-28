@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import Validator from 'validatorjs';
 
 export default function useValidation(data, rules, touched = {}, server_errors = {}) {
-	const [errors, setErrors] = useState(server_errors);
+	const [errors, setErrors] = useState({});
 	const cycle = useRef(0);
 	const debounce = useRef(null);
 	
 	// FIXME: Server errors may have duplicates, and aren't showing because of changed/touched checks
+	// FIXME: I've just removed them for now
 	
 	useEffect(() => {
 		clearTimeout(debounce.current);

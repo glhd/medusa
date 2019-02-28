@@ -19,7 +19,7 @@ export default ({ config, existing, old, server_errors }) => {
 	
 	return (
 		<MedusaContext.Provider value={medusa}>
-			<h1>
+			<h1 className="text-lg text-grey-dark">
 				{ creating ? 'Create New' : 'Update' } { content_type.title }
 			</h1>
 			
@@ -32,14 +32,14 @@ export default ({ config, existing, old, server_errors }) => {
 			{/*) }*/}
 			
 			{/*<Debugger changed={changed} touched={touched} />*/}
-			<Debugger {...data} />
+			{/*<Debugger {...data} />*/}
 			{/*<Debugger {...server_errors} />*/}
 			
 			<input name="content_type" type="hidden" value={ content_type.id } />
 			<input name="data" type="hidden" value={JSON.stringify(data)} />
 			
 			<div className="py-4">
-				<button type="Submit" className="btn">
+				<button type="Submit" className="mx-2 bg-blue border border-blue-darker text-white border rounded px-6 py-3">
 					{ creating ? 'Create' : 'Save Changes to' } { content_type.title }
 				</button>
 			</div>

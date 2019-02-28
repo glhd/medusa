@@ -3,5 +3,5 @@ import useFields from "../hooks/useFields";
 
 export default ({ fields }) => {
 	return useFields(fields)
-		.map(([Field, props]) => <Field {...props} />);
+		.map(({ Field, props }) => <Field {...props} />);
 };
