@@ -7,6 +7,24 @@
 	<link href="https://cdn.jsdelivr.net/npm/tailwindcss/dist/tailwind.min.css" rel="stylesheet" />
 </head>
 <body>
+<div class="bg-grey-lightest border-b p-2 mb-4">
+	<div class="container mx-auto flex items-baseline">
+		<h1 class="text-lg font-normal mr-4">
+			<a class="no-underline text-grey-dark hover:underline" href="{{ route('medusa.index') }}">
+				Medussa
+			</a>
+		</h1>
+		
+		<ul class="list-reset flex items-baseline">
+			<li class="ml-4">
+				<a class="no-underline text-grey hover:text-grey-dark hover:underline" href="{{ route('medusa.index') }}">
+					All Content
+				</a>
+			</li>
+			@yield('nav')
+		</ul>
+	</div>
+</div>
 <div class="container mx-auto">
 	@yield('content')
 </div>

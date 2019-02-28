@@ -33,12 +33,24 @@ abstract class Field implements FieldContract
 	/**
 	 * @var array
 	 */
-	protected $config;
+	protected $config = [];
 	
 	/**
 	 * @var array
 	 */
-	protected $rules = [];
+	protected $rules;
+	
+	/**
+	 * @var bool
+	 */
+	protected $rules_configured = false;
+	
+	/**
+	 * Rules pending parse/merge
+	 *
+	 * @var array
+	 */
+	protected $pending_rules = [];
 	
 	/**
 	 * Define the default initial value for this field
@@ -58,16 +70,12 @@ abstract class Field implements FieldContract
 		$this->name = $name;
 		$this->display_name = Str::title(Str::snake($name, ' '));
 		$this->label = $this->display_name;
-		$this->initial_value = $this->defaultInitialValue(); // FIXME: This needs to be lazy, too
-		
-		if (null === $this->config) {
-			// FIXME: The ordering of all this needs to be sorted outs
-			$this->config = $this->defaultConfig();
-		}
-		
-		$this->configureRules(); // FIXME: Rules need to be lazily initialized so that config settings can affect rules
 	}
 	
+	/**
+	 * @param $name
+	 * @return \Galahad\Medusa\Fields\Field|$this
+	 */
 	public static function make($name) : self
 	{
 		return new static($name);
@@ -120,7 +128,7 @@ abstract class Field implements FieldContract
 	
 	public function getConfig() : array
 	{
-		return $this->config;
+		return array_merge($this->defaultConfig(), $this->config);
 	}
 	
 	/**
@@ -130,7 +138,7 @@ abstract class Field implements FieldContract
 	 */
 	public function getInitialValue()
 	{
-		return $this->initial_value;
+		return $this->initial_value ?? $this->defaultInitialValue();
 	}
 	
 	public function setInitialValue($initial_value) : self
@@ -151,6 +159,9 @@ abstract class Field implements FieldContract
 		// TODO: Rule ordering matters… (esp. required/nullable/etc)
 		$name = $this->getName();
 		
+		// We need to reset the compiled rules if we add more after we call getRules()
+		$this->rules = null;
+		
 		if (is_string($rules)) {
 			$parsed = (new ValidationRuleParser([$name => $this->getInitialValue()]))
 				->explode([
@@ -167,29 +178,44 @@ abstract class Field implements FieldContract
 			$rules = [$name => $rules];
 		}
 		
-		foreach ($rules as $key => $value) {
-			if ($name !== $key && 0 !== strpos($key, "{$name}.")) {
-				$key = "{$name}.{$key}";
-			}
-			
-			if (!isset($this->rules[$key])) {
-				$this->rules[$key] = $value;
-			} else {
-				$this->rules[$key] = array_merge($this->rules[$key], $value);
-			}
-		}
+		$this->pending_rules[] = $rules;
 		
 		return $this;
 	}
 	
 	public function getRules() : array
 	{
+		if (null === $this->rules) {
+			$name = $this->getName();
+			
+			if (!$this->rules_configured) {
+				$this->configureRules();
+				$this->rules_configured = true;
+			}
+			
+			$this->rules = [];
+			
+			foreach ($this->pending_rules as $pending_rules) {
+				foreach ($pending_rules as $key => $value) {
+					if ($name !== $key && 0 !== strpos($key, "{$name}.")) {
+						$key = "{$name}.{$key}";
+					}
+					
+					if (!isset($this->rules[$key])) {
+						$this->rules[$key] = $value;
+					} else {
+						$this->rules[$key] = array_merge($this->rules[$key], $value);
+					}
+				}
+			}
+		}
+		
 		return $this->rules;
 	}
 	
 	public function getMessages() : array
 	{
-		return [];
+		return []; // FIXME
 	}
 	
 	public function setRequired() : self

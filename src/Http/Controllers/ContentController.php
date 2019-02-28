@@ -67,7 +67,9 @@ class ContentController extends Controller
 	 */
 	public function show(Content $content)
 	{
-		dd($content->toArray());
+		return view('medusa::content.show', [
+			'content' => $content,
+		]);
 	}
 	
 	/**

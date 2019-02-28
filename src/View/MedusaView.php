@@ -5,7 +5,7 @@ namespace Galahad\Medusa\View;
 use Galahad\Medusa\Contracts\Content;
 use Galahad\Medusa\Contracts\ContentType;
 use Galahad\Medusa\Contracts\ContentTypeResolver;
-use Galahad\Medusa\Support\Stitcher;
+use Galahad\Medusa\Serializers\ContentTypeSerializer;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\HtmlString;
@@ -64,8 +64,8 @@ class MedusaView implements Htmlable
 	{
 		$view_data = [
 			'content_type' => $this->content_type,
-			'stitched' => new Stitcher($this->content_type),
 			'content' => $this->content,
+			'serialized' => new ContentTypeSerializer($this->content_type),
 		];
 		
 		$hot = $this->base_path.'/resources/js/dist/hot';

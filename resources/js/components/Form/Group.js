@@ -1,9 +1,8 @@
 import React from 'react';
-import useFieldContext from '../../hooks/useFieldContext';
 
-export default function Group({ field, children }) {
+export default function Group(props) {
+	const { field, changed, touched, errors, children } = props;
 	const { id, label } = field;
-	const { changed, touched, errors } = useFieldContext(field);
 	
 	return (
 		<div className="py-4">

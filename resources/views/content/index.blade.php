@@ -3,6 +3,16 @@
 
 @extends('medusa::layout')
 
+@section('nav')
+	@foreach($content_types as $content_type)
+		<li class="ml-3 border-l pl-3">
+			<a class="no-underline text-grey hover:text-grey-dark hover:underline" href="{{ route('medusa.create', $content_type) }}">
+				New {{ $content_type->getTitle() }}
+			</a>
+		</li>
+	@endforeach
+@endsection
+
 @section('content')
 	
 	@if($content_page->count())

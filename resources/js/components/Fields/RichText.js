@@ -1,27 +1,58 @@
 import React, { useEffect, useState } from 'react';
-import { loadCSS } from 'fg-loadcss';
 import FroalaEditor from 'react-froala-wysiwyg';
-import Debugger from '../Debugger';
-
-const loadStyle = (src) => new Promise((resolve => {
-	loadCSS(src).onloadcssdefined(resolve);
-}));
-
-const loadScript = (src) => new Promise((resolve, reject) => {
-	const script = document.createElement('script');
-	script.onload = resolve;
-	script.onerror = reject;
-	script.src = src;
-	
-	const firstScript = document.getElementsByTagName('script')[0];
-	firstScript.parentNode.insertBefore(script, firstScript);
-});
+import { loadCSS } from 'fg-loadcss';
+import Group from '../Form/Group';
 
 let dependenciesLoaded = false;
 
-// TODO: This should eventually be packaged into Medusa
+export default function RichText(props) {
+	const { field, value, onChange } = props;
+	const { id } = field;
+	
+	const editor_config = {
+		key: field.config.key, // TODO
+		linkAutoPrefix: 'https://',
+	};
+	
+	let wysiwyg = null;
+	const loaded = useDependencies();
+	
+	if (loaded) {
+		wysiwyg = <FroalaEditor
+			id={id}
+			tag="textarea"
+			model={ value }
+			config={ editor_config }
+			onModelChange={ onChange }
+		/>;
+	}
+	
+	return (
+		<Group { ...props }>
+			{ wysiwyg }
+		</Group>
+	);
+};
 
-const useDependencies = () => {
+function loadStyle(src) {
+	return new Promise(resolve => {
+		loadCSS(src).onloadcssdefined(resolve);
+	});
+}
+
+function loadScript(src) {
+	return new Promise((resolve, reject) => {
+		const script = document.createElement('script');
+		script.onload = resolve;
+		script.onerror = reject;
+		script.src = src;
+		
+		const siblingElement = document.getElementsByTagName('link')[0];
+		siblingElement.parentNode.insertBefore(script, siblingElement);
+	});
+}
+
+function useDependencies() {
 	const [loaded, setLoaded] = useState(dependenciesLoaded);
 	
 	useEffect(() => {
@@ -43,56 +74,4 @@ const useDependencies = () => {
 	}, []);
 	
 	return loaded;
-};
-
-export default (props) => {
-	const { name, errors, label, initial_value, existing, value, config, onChange } = props;
-	const id = `medusa-${ name }`;
-	const dirty = existing ? existing !== value : initial_value !== value;
-	
-	const loaded = useDependencies();
-	
-	const editorConfig = {
-		// placeholderText: config.placeholder || 'Type Something',
-		key: config.key, // TODO
-		linkAutoPrefix: 'https://',
-		// imageUploadParam: 'media',
-		// imageUploadURL: String(route('content.media.store')),
-		// fileUploadParam: 'media',
-		// fileUploadURL: String(route('content.media.store')),
-		// requestHeaders: {
-		// 	'X-CSRF-TOKEN': defaultHeaders['X-CSRF-TOKEN'],
-		// },
-	};
-	
-	// if ('toolbar' in config && config.toolbar in toolbarPresets) {
-	// 	editorConfig.toolbarButtons = toolbarPresets[config.toolbar];
-	// }
-	
-	return (
-		<div className="py-4">
-			<label className="block bold mb-2" htmlFor={ id }>
-				{ label }
-				{ dirty && <span className="ml-1 text-grey-light text-sm">(changed)</span> }
-			</label>
-			
-			{ loaded && (
-				<FroalaEditor
-					tag="textarea"
-					model={ value }
-					config={ editorConfig }
-					onModelChange={ onChange }
-				/>
-			) }
-			{ (dirty && errors.length > 0) && (
-				<ul className="list-reset mt-2">
-					{ errors.map((error, i) => (
-						<li key={ i } className="text-red mb-1">
-							{ error }
-						</li>
-					)) }
-				</ul>
-			) }
-		</div>
-	);
-};
+}
