@@ -15,5 +15,5 @@
 	<?php echo e($script); ?>
 	</script>
 @else
-	<script src="{{ $src }}"></script>
+	<script {{ app()->isLocal() ? 'crossorigin' : '' }} src="{{ $src }}"></script>
 @endif

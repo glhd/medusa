@@ -4,6 +4,7 @@ import Fields from './Fields';
 import useData from '../hooks/useData';
 import useDependencies from '../hooks/useDependencies';
 import useValidation from '../hooks/useValidation';
+import { MedusaContext } from '../hooks/useMedusaContext';
 
 export default ({ config, existing, old, server_errors }) => {
 	const { fields, rules, content_type } = config;
@@ -12,15 +13,17 @@ export default ({ config, existing, old, server_errors }) => {
 	const [dependencies, onDependencies] = useDependencies();
 	const errors = useValidation(data, rules, touched, server_errors);
 	
+	const medusa = { data, changed, touched, errors, onChange, onDependencies };
+	
 	const creating = 0 === Object.keys(existing).length;
 	
 	return (
-		<>
+		<MedusaContext.Provider value={medusa}>
 			<h1>
 				{ creating ? 'Create New' : 'Update' } { content_type.title }
 			</h1>
 			
-			<Fields fields={fields} medusa={{ data, changed, touched, errors, onChange, onDependencies }} />
+			<Fields fields={fields} />
 			
 			{/*{ Object.keys(errors).length > 0 && (*/}
 				{/*<div className="border border-red rounded bg-red-lightest text-red p-4">*/}
@@ -40,7 +43,7 @@ export default ({ config, existing, old, server_errors }) => {
 					{ creating ? 'Create' : 'Save Changes to' } { content_type.title }
 				</button>
 			</div>
-		</>
+		</MedusaContext.Provider>
 	);
 };
 

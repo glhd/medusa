@@ -1,7 +1,7 @@
 import React from 'react';
 import useFields from "../hooks/useFields";
 
-export default ({ fields, medusa }) => {
-	return useFields(fields, medusa)
-		.map(([Field, props]) => <Field medusa={medusa} {...props} />);
+export default ({ fields }) => {
+	return useFields(fields)
+		.map(([Field, props]) => <Field {...props} />);
 };

@@ -1,8 +1,11 @@
 import React, { useMemo } from 'react';
+import { useMedusaContext } from "./useMedusaContext";
 import registry from '../registry';
 
-export default function useFields(fields, medusa) {
+export default function useFields(fields) {
+	const medusa = useMedusaContext();
 	const { data, changed, touched, errors, onChange, onDependencies } = medusa;
+	
 	return useMemo(() => {
 		return Object.values(fields)
 			.map(field => {
@@ -11,18 +14,15 @@ export default function useFields(fields, medusa) {
 						registry[field.component],
 						mapFieldProps(field, medusa)
 					];
-				} else {
-					return [
-						() => <div className="text-red">Unable to load '{ field.component }'</div>,
-						{},
-					];
 				}
+				
+				throw `Unable to find field component "${field.component}"`;
 			});
 	}, [fields, data, changed, touched, errors, onChange, onDependencies]);
 }
 
-function mapFieldProps(field, props) {
-	const { data, changed, touched, errors, onChange, onDependencies } = props;
+function mapFieldProps(field, medusa) {
+	const { data, changed, touched, errors, onChange, onDependencies } = medusa;
 	const { name } = field;
 	
 	return {
