@@ -1,0 +1,11 @@
+
+import React from 'react';
+import { } from 'react-bootstrap';
+import Text from './Text';
+
+export default class {{name}} extends Text {
+	render() {
+		// Create implementation here:
+		return super.render();
+	}
+}

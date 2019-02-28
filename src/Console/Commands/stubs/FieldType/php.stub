@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Cms\FieldType;
+
+/**
+ * Class {{name}}
+ *
+ * @package App\Cms\FieldType
+ */
+class {{name}} extends Text
+{
+	/**
+	 * @return array
+	 */
+	public function rules()
+	{
+		return parent::rules();
+	}
+}
