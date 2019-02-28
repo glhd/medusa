@@ -5,7 +5,7 @@
 <div
 	id="medusa"
 	data-config="{{ $serialized->toJson() }}"
-	data-old="{{ json_encode((object) old('data', [])) }}"
+	data-old="{{ $old }}"
 	data-errors="{{ json_encode((object) $errors->getBag('default')->toArray()) }}"
 	data-existing="{{ json_encode($content ? $content->getData() : new stdClass()) }}"
 ></div>

@@ -56,7 +56,9 @@ class ContentController extends Controller
 		$content->setData($request->contentData());
 		$content->save();
 		
-		return redirect()->route('medusa.show', $content);
+		return redirect()
+			->route('medusa.edit', $content)
+			->with('snackbar', "{$content->getContentType()->getTitle()} Created!");
 	}
 	
 	/**
@@ -67,9 +69,7 @@ class ContentController extends Controller
 	 */
 	public function show(Content $content)
 	{
-		return view('medusa::content.show', [
-			'content' => $content,
-		]);
+		return redirect()->route('medusa.edit', $content);
 	}
 	
 	/**
@@ -97,7 +97,9 @@ class ContentController extends Controller
 		$content->setData($request->contentData());
 		$content->save();
 		
-		return redirect()->route('medusa.show', $content);
+		return redirect()
+			->route('medusa.edit', $content)
+			->with('snackbar', "{$content->getContentType()->getTitle()} Saved!");
 	}
 	
 	/**

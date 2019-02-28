@@ -38,6 +38,11 @@ class Blocks extends Field
 		return $config;
 	}
 	
+	protected function configureRules()
+	{
+		$this->addRules('array'); // FIXME
+	}
+	
 	protected function defaultInitialValue()
 	{
 		return [];

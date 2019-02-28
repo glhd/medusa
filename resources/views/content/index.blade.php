@@ -20,29 +20,33 @@
 		<table class="w-full">
 			<thead>
 				<tr>
-					<th class="border-b p-2 font-bold">Type</th>
-					<th class="border-b p-2 font-bold">Slug</th>
-					<th class="border-b p-2 font-bold">Description</th>
-					<th class="border-b p-2 font-bold"></th>
+					<th class="border-b border-grey-lighter p-2 text-left text-sm font-semibold text-grey-dark">
+						Content Type
+					</th>
+					<th class="border-b border-grey-lighter p-2 text-left text-sm font-semibold text-grey-dark">
+						URL Slug
+					</th>
+					<th class="border-b border-grey-lighter p-2 text-left text-sm font-semibold text-grey-dark">
+						Description
+					</th>
 				</tr>
 			</thead>
 			<tbody>
 				@foreach($content_page as $content)
 					<tr>
-						<td class="p-2">
-							{{ $content->getContentType()->getTitle() }}
+						<td class="px-2 py-4">
+							<span class="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">
+								{{ $content->getContentType()->getTitle() }}
+							</span>
 						</td>
-						<td class="p-2">
-							<span class="font-mono text-sm p-1 border rounded bg-grey-lightest text-grey-dark">
+						<td class="px-2 py-4">
+							<span class="font-mono text-sm px-1 py-px border rounded bg-grey-lightest text-grey-dark">
 								{{ $content->getSlug() }}
 							</span>
 						</td>
-						<td class="p-2">
-							{{ $content->getDescription() }}
-						</td>
-						<td class="p-2">
-							<a href="{{ route('medusa.edit', $content) }}">
-								Edit
+						<td class="px-2 py-4">
+							<a class="font-semibold text-grey-darker no-underline hover:underline hover:text-blue" href="{{ route('medusa.edit', $content) }}">
+								{{ $content->getDescription() }}
 							</a>
 						</td>
 					</tr>
@@ -60,12 +64,12 @@
 		
 	@endif
 	
-	<hr />
-	
-	@foreach($content_types as $content_type)
-		<a class="btn" href="{{ route('medusa.create', $content_type) }}">
-			Create New {{ $content_type->getTitle() }}
-		</a>
-	@endforeach
+	<div class="-mx-1 my-10 py-10 border-t border-grey-lighter">
+		@foreach($content_types as $content_type)
+			<a class="mx-1 inline-block bg-blue border border-blue-darker text-white border rounded px-4 py-2 no-underline" href="{{ route('medusa.create', $content_type) }}">
+				Create a {{ $content_type->getTitle() }}
+			</a>
+		@endforeach
+	</div>
 	
 @endsection

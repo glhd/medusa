@@ -28,5 +28,27 @@
 <div class="container mx-auto py-8">
 	@yield('content')
 </div>
+
+@if($snackbar = session('snackbar'))
+	<div id="snackbar" class="absolute pin-l pin-r pin-b p-8" style="transition: all .7s; opacity: 0;">
+		<div class="container mx-auto text-right">
+			<div class="inline-block bg-grey-dark text-white font-semibold py-3 px-6 rounded-full shadow">
+				{{ $snackbar }}
+			</div>
+		</div>
+	</div>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var bar = document.getElementById('snackbar');
+		bar.style.opacity = '1';
+		bar.style.transform = 'translateY(-20px)';
+		setTimeout(function() {
+			bar.style.opacity = '0';
+			bar.style.transform = 'translateY(0)';
+		}, 5000);
+	});
+	</script>
+@endif
+
 </body>
 </html>

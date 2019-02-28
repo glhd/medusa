@@ -66,6 +66,7 @@ class MedusaView implements Htmlable
 			'content_type' => $this->content_type,
 			'content' => $this->content,
 			'serialized' => new ContentTypeSerializer($this->content_type),
+			'old' => old('data', json_encode(new \stdClass())),
 		];
 		
 		$hot = $this->base_path.'/resources/js/dist/hot';

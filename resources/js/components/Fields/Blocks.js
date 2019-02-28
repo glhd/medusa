@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import useFields from "../../hooks/useFields";
 import Group from "../Form/Group";
@@ -90,26 +90,30 @@ const BlockFields = ({ onDragEnd }) => {
 };
 
 const BlockList = ({ provided, snapshot }) => {
-	const { blocks, block_values } = useBlockContext();
 	const { innerRef, placeholder } = provided;
 	const { isDraggingOver } = snapshot;
 	
 	return (
 		<div ref={ innerRef } className={ isDraggingOver ? 'bg-blue-lightest' : '' }>
-			{ blocks.map((block, index) => (
-				<Draggable key={ block.key } draggableId={ block.key } index={ index }>
-					{ (provided, snapshot) => <BlockField
-						block={ block }
-						index={ index }
-						provided={ provided }
-						snapshot={ snapshot }
-						value={ block_values[index].value }
-					/> }
-				</Draggable>
-			)) }
+			<InnerBlockList />
 			{ placeholder }
 		</div>
 	);
+};
+
+const InnerBlockList = () => {
+	const { blocks, block_values } = useBlockContext();
+	return useMemo(() => blocks.map((block, index) => (
+		<Draggable key={ block.key } draggableId={ block.key } index={ index }>
+			{ (provided, snapshot) => <BlockField
+				block={ block }
+				index={ index }
+				provided={ provided }
+				snapshot={ snapshot }
+				value={ block_values[index].value }
+			/> }
+		</Draggable>
+	)), [blocks, block_values]);
 };
 
 const BlockField = ({ index, block, value, provided, snapshot }) => {
@@ -158,7 +162,7 @@ const BlockField = ({ index, block, value, provided, snapshot }) => {
 			<div className="flex-1 pr-2">
 				<Field
 					{ ...props }
-					field={ { ...props.field, id: `${props.field.id}-${key}` } }
+					field={ { ...props.field, id: `${ props.field.id }-${ key }` } }
 					key={ key }
 					value={ value }
 					onChange={ value => onChange(index, value) }

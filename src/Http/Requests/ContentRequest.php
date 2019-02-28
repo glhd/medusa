@@ -5,6 +5,7 @@ namespace Galahad\Medusa\Http\Requests;
 use Galahad\Medusa\Contracts\Content;
 use Galahad\Medusa\Contracts\ContentType;
 use Galahad\Medusa\Validation\ContentValidator;
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -60,6 +61,17 @@ class ContentRequest extends FormRequest
 				}
 			}
 		});
+	}
+	
+	protected function failedValidation(ValidatorContract $validator)
+	{
+		$this->session()->flash('snackbar', sprintf(
+			'You must fix %d %s before saving!',
+			$count = $validator->errors()->count(),
+			str_plural('error', $count)
+		));
+		
+		parent::failedValidation($validator);
 	}
 	
 	public function rules()

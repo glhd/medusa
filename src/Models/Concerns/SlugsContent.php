@@ -3,6 +3,7 @@
 namespace Galahad\Medusa\Models\Concerns;
 
 use Galahad\Medusa\Contracts\Content;
+use Illuminate\Support\Str;
 
 trait SlugsContent
 {
@@ -10,7 +11,10 @@ trait SlugsContent
 	{
 		static::saving(function(Content $content) {
 			if (empty($content->getSlug())) {
-				$content->setSlug($content->getContentType()->generateSlugFromData($content->getData()));
+				// FIXME: Ensure unique
+				$slug_source = $content->getContentType()->generateSlugFromData($content->getData());
+				$slug = Str::slug($slug_source);
+				$content->setSlug($slug);
 			}
 		});
 	}
