@@ -1,5 +1,9 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { Menu, MenuList, MenuButton, MenuItem } from '@reach/menu-button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronCircleDown } from '@fortawesome/free-solid-svg-icons';
+import { faTrashAlt, faClone, faPlusSquare  } from '@fortawesome/free-regular-svg-icons';
 import useFields from "../../hooks/useFields";
 import Group from "../Form/Group";
 
@@ -116,6 +120,8 @@ const InnerBlockList = () => {
 	)), [blocks, block_values]);
 };
 
+// TODO: https://ui.reach.tech/menu-button - "Unmounting the Menu after an action"
+
 const BlockField = ({ index, block, value, provided, snapshot }) => {
 	const { Field, props, key } = block;
 	const { onChange, onDelete, onAdd } = useBlockContext();
@@ -169,18 +175,29 @@ const BlockField = ({ index, block, value, provided, snapshot }) => {
 				/>
 			</div>
 			<div className="flex flex-col justify-center items-center px-4 ml-4 border-l border-grey-lighter">
-				<button
-					onClick={ onBlockDelete }
-					title="Delete"
-					className="flex items-center text-grey-light hover:text-red py-2">
-					<TrashIcon />
-				</button>
-				<button
-					onClick={ onBlockClone }
-					title="Clone"
-					className="flex items-center text-grey-light hover:text-green py-2">
-					<CloneIcon />
-				</button>
+				<Menu>
+					<MenuButton className="text-grey-light hover:text-grey py-2">
+						<FontAwesomeIcon icon={faChevronCircleDown} size="lg" />
+					</MenuButton>
+					<MenuList className="rounded border-grey-light shadow px-0 py-1">
+						<MenuItem className="px-4 py-2" onSelect={onBlockClone}>
+							<FontAwesomeIcon className="mr-2" icon={faClone} fixedWidth={true} />
+							Duplicate
+						</MenuItem>
+						<MenuItem className="px-4 py-2" onSelect={() => onBlockDelete()}>
+							<FontAwesomeIcon className="mr-2" icon={faTrashAlt} fixedWidth={true} />
+							Delete
+						</MenuItem>
+						<MenuItem className="px-4 py-2" onSelect={() => alert('todo')}>
+							<FontAwesomeIcon className="mr-2" icon={faPlusSquare} fixedWidth={true} />
+							Add Below…
+						</MenuItem>
+						<MenuItem className="px-4 py-2" onSelect={() => alert('todo')}>
+							<FontAwesomeIcon className="mr-2" icon={faPlusSquare} fixedWidth={true} />
+							Add Above…
+						</MenuItem>
+					</MenuList>
+				</Menu>
 			</div>
 		</div>
 	);

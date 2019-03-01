@@ -1,0 +1,8 @@
+@import "@reach/menu-button/styles.css";
+@import "tailwindcss/preflight";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+[data-reach-menu-item][data-selected] {
+	@apply .bg-blue .text-white;
+}

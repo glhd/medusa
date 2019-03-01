@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import { hot } from 'react-hot-loader/root'
 import App from './components/App';
 
+import '../css/medusa.css';
+
 const HotApp = hot(App);
 
 const root = document.getElementById('medusa');
