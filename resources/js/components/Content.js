@@ -2,7 +2,7 @@ import React from 'react';
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo-hooks';
 import Debugger from './Debugger';
-import useFields from "../hooks/useFields";
+import Editor from './Editor';
 
 const content = gql`
     query Content($id: String!) {
@@ -36,8 +36,13 @@ export default ({ id }) => {
 		return null; // FIXME
 	}
 	
-	// return useFields(fields)
-	// 	.map(({ Field, props }) => <Field {...props} />);
+	const result = data.getContent;
+	const existing = JSON.parse(result.data);
 	
-	return <Debugger data={data} error={error} loading={loading} />;
+	return (
+		<div>
+			{/*<Debugger {...data.getContent} />*/}
+			<Editor content_type={result.content_type} id={result.id} existing={existing} />
+		</div>
+	);
 };

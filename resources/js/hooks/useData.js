@@ -6,11 +6,7 @@ export default (fields, initial) => {
 		const touched = {};
 		
 		Object.keys(initial).forEach(key => {
-			touched[key] = (
-				key in initial
-				&& key in fields
-				&& initial[key] !== fields[key].initial_value
-			);
+			touched[key] = false;
 		});
 		
 		return touched;

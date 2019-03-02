@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
-import { useMedusaContext } from "./useMedusaContext";
+import useEditorContext from './useEditorContext';
 import registry from '../registry';
 
 export default function useFields(fields) {
-	const medusa = useMedusaContext();
-	const { data, changed, touched, errors, onChange, onDependencies } = medusa;
+	const context = useEditorContext();
+	const { data, changed, touched, errors, onChange, onDependencies } = context;
 	
 	return useMemo(() => {
 		return Object.values(fields)
@@ -12,7 +12,7 @@ export default function useFields(fields) {
 				if (field.component in registry) {
 					return {
 						Field: registry[field.component],
-						props: mapFieldProps(field, medusa),
+						props: mapFieldProps(field, context),
 					};
 				}
 				
@@ -26,7 +26,11 @@ function mapFieldProps(field, medusa) {
 	const { name } = field;
 	
 	return {
-		field,
+		field: {
+			...field,
+			config: JSON.parse(field.config),
+			initial_value: JSON.parse(field.initial_value),
+		},
 		key: name,
 		value: data[name],
 		changed: changed[name],

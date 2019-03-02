@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import useMedusaContext from '../hooks/useMedusaContext';
+import useEditorContext from '../hooks/useEditorContext';
 
 export default function useReferencedField(name, fallback = null) {
-	const { data } = useMedusaContext();
+	const { data } = useEditorContext();
 	return useMemo(() => {
 		return name in data
 			? data[name]

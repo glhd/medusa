@@ -50,17 +50,17 @@ export default ({ page }) => {
 				{ content.map(content => (
 					<tr key={ content.id }>
 						<td className="px-2 py-4">
-								<span className="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">
-									{ content.content_type.title }
-								</span>
+							<span className="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">
+								{ content.content_type.title }
+							</span>
 						</td>
 						<td className="px-2 py-4">
-								<span className="inline-block bg-grey-lighter rounded-full px-3 py-1 text-sm font-semibold text-grey-darker mr-2">
-									{ content.slug }
-								</span>
+							<Link to={ `content/${ content.id }` } className="font-mono text-sm text-grey no-underline hover:text-blue hover:underline">
+								{ content.slug }
+							</Link>
 						</td>
 						<td className="px-2 py-4">
-							<Link to={`content/${content.id}`} className="font-semibold text-grey-darker no-underline hover:underline hover:text-blue">
+							<Link to={ `content/${ content.id }` } className="font-semibold text-grey-darker no-underline hover:underline hover:text-blue">
 								{ content.description }
 							</Link>
 						</td>
