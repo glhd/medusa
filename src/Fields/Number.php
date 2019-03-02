@@ -2,12 +2,11 @@
 
 namespace Galahad\Medusa\Fields;
 
+use Galahad\Medusa\Fields\Concerns\HasIntValue;
+
 class Number extends Text
 {
-	public function defaultInitialValue()
-	{
-		return 0;
-	}
+	use HasIntValue;
 	
 	protected function configureRules()
 	{

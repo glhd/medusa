@@ -5,67 +5,55 @@ namespace Galahad\Medusa\Serializers;
 use Galahad\Medusa\Contracts\ContentType;
 use Galahad\Medusa\Contracts\Field;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Jsonable;
-use JsonSerializable;
 
-class ContentTypeSerializer implements Arrayable, Jsonable, JsonSerializable
+class ContentTypeSerializer extends Serializer
 {
 	/**
 	 * @var \Galahad\Medusa\Contracts\ContentType
 	 */
-	protected $content_type;
+	protected $target;
+	
+	/**
+	 * @var array
+	 */
+	protected $keys = ['id', 'title', 'is_singleton', 'fields', 'rules', 'messages'];
 	
 	public function __construct(ContentType $content_type)
 	{
-		$this->content_type = $content_type;
+		$this->target = $content_type;
 	}
 	
-	public function toArray()
+	protected function serializeIsSingleton() : bool
 	{
-		return [
-			'id' => $this->content_type->getId(),
-			'title' => $this->content_type->getTitle(),
-			'is_singleton' => $this->content_type->isSingleton(),
-			'fields' => $this->fieldsToArray(),
-			'rules' => json_encode($this->fieldsToRules()),
-			'messages' => json_encode($this->fieldsToMessages()),
-		];
+		return $this->target->isSingleton();
 	}
 	
-	public function toJson($options = 0)
+	protected function serializeFields() : array
 	{
-		return json_encode($this->toArray(), $options);
-	}
-	
-	public function jsonSerialize()
-	{
-		return $this->toArray();
-	}
-	
-	protected function fieldsToArray() : array
-	{
-		return $this->content_type->getFields()
+		return $this->target->getFields()
 			->toBase()
 			->map(function(Field $field) {
-				return new FieldSerializer($field);
+				return (new FieldSerializer($field))->setKeys($this->keys['fields']);
 			})
 			->values()
 			->toArray();
 	}
 	
-	protected function fieldsToRules() : array
+	protected function serializeRules() : string
 	{
-		return $this->content_type->getFields()
+		$rules = $this->target->getFields()
 			->toBase()
 			->map(function(Field $field) {
 				return $field->getRules();
 			})
 			->collapse()
 			->toArray();
+		
+		return json_encode($rules);
 	}
 	
-	protected function fieldsToMessages() : array
+	protected function serializeMessages() : string
 	{
-		return []; // FIXME
+		return json_encode(new \stdClass()); // FIXME
 	}
 }

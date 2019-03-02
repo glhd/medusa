@@ -48,7 +48,7 @@ class ContentRequest extends FormRequest
 			}
 			
 			$content_validator = new ContentValidator(
-				$validator->getTranslator(),
+				$validator->getTranslator(),w
 				json_decode($this->input('data'), true),
 				$this->contentType()
 			);

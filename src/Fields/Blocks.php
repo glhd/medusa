@@ -37,6 +37,11 @@ class Blocks extends Field
 		return $config;
 	}
 	
+	public function getGraphQLType() : string
+	{
+		return '[String]!';
+	}
+	
 	protected function configureRules()
 	{
 		$this->addRules('array'); // FIXME

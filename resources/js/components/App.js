@@ -4,14 +4,14 @@ import { ApolloClient } from 'apollo-boost';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloProvider } from 'react-apollo-hooks';
+import AppProvider from './AppProvider';
 import Layout from './Layout';
 import Home from './Home';
 import Content from './Content';
 import NewContent from './NewContent';
-import { AppContext } from "../hooks/useAppContext";
 
 export default (context) => {
-	const { basepath, graphql_endpoint, content_types } = context;
+	const { basepath, graphql_endpoint } = context;
 	
 	const apollo_client = useMemo(() => {
 		return new ApolloClient({
@@ -21,17 +21,17 @@ export default (context) => {
 	}, [graphql_endpoint]);
 	
 	return (
-		<AppContext.Provider value={context}>
-			<ApolloProvider client={apollo_client}>
-				<Router basepath={basepath}>
-					<Layout path="/">
+		<ApolloProvider client={apollo_client}>
+			<AppProvider root_context={context}>
+				<Layout>
+					<Router basepath={basepath}>
 						<Home path="/" />
 						<Home path="/page/:page" />
 						<Content path="/content/:id" />
 						<NewContent path="/new/:name" />
-					</Layout>
-				</Router>
-			</ApolloProvider>
-		</AppContext.Provider>
+					</Router>
+				</Layout>
+			</AppProvider>
+		</ApolloProvider>
 	);
 };

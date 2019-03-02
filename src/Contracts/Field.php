@@ -48,6 +48,8 @@ interface Field
 	 */
 	public function getInitialValue();
 	
+	public function getGraphQLType() : string;
+	
 	/**
 	 * Validation rules
 	 *

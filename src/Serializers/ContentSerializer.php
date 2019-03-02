@@ -3,42 +3,38 @@
 namespace Galahad\Medusa\Serializers;
 
 use Galahad\Medusa\Contracts\Content;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Jsonable;
-use JsonSerializable;
 
-class ContentSerializer implements Arrayable, Jsonable, JsonSerializable
+class ContentSerializer extends Serializer
 {
 	/**
 	 * @var \Galahad\Medusa\Contracts\Content
 	 */
-	protected $content;
+	protected $target;
+	
+	/**
+	 * @var array
+	 */
+	protected $keys = ['id', 'content_type', 'description', 'slug', 'data'];
 	
 	public function __construct(Content $content)
 	{
-		$this->content = $content;
+		$this->target = $content;
 	}
 	
-	public function toArray()
+	protected function serializeId() : string
 	{
-		// TODO: Lazy load some values depending on request
-		
-		return [
-			'id' => (string) $this->content->getId(),
-			'content_type' => (new ContentTypeSerializer($this->content->getContentType()))->toArray(),
-			'description' => $this->content->getDescription(),
-			'slug' => $this->content->getSlug(),
-			'data' => json_encode($this->content->getData()),
-		];
+		return (string) $this->target->getId();
 	}
 	
-	public function toJson($options = 0)
+	protected function serializeData() : string
 	{
-		return json_encode($this->toArray(), $options);
+		return json_encode($this->target->getData());
 	}
 	
-	public function jsonSerialize()
+	protected function serializeContentType() : array
 	{
-		return $this->toArray();
+		return (new ContentTypeSerializer($this->target->getContentType()))
+			->setKeys($this->keys['content_type'])
+			->toArray();
 	}
 }

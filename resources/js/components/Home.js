@@ -2,29 +2,13 @@ import React from 'react';
 import { Link } from '@reach/router';
 import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo-hooks';
-
-const currentPage = gql`
-    {
-        allContent {
-            total
-            per_page
-            content {
-                id
-                slug
-                description
-                content_type {
-                    title
-                }
-            }
-        }
-    }
-`;
+import Loading from "./Loading";
 
 export default ({ page }) => {
 	const { data, error, loading } = useQuery(currentPage);
 	
 	if (loading) {
-		return null; // FIXME
+		return <Loading />;
 	}
 	
 	const { total, per_page, content } = data.allContent;
@@ -70,3 +54,20 @@ export default ({ page }) => {
 		</table>
 	);
 };
+
+const currentPage = gql`
+    {
+        allContent {
+            total
+            per_page
+            content {
+                id
+                slug
+                description
+                content_type {
+                    title
+                }
+            }
+        }
+    }
+`;

@@ -4,8 +4,12 @@ namespace Galahad\Medusa\Resolvers\Content;
 
 use Galahad\Medusa\Contracts\Content as ContentContract;
 use Galahad\Medusa\Contracts\ContentResolver;
+use Galahad\Medusa\Contracts\ContentType;
 use Galahad\Medusa\Models\Content;
+use Galahad\Medusa\Validation\ContentValidator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Translation\Translator;
+use Illuminate\Validation\ValidationException;
 
 class EloquentResolver implements ContentResolver
 {

@@ -1,4 +1,16 @@
 {
+  "schema": {
+    "request": {
+      "url" : "http://www.test/medusa/graphql",
+      "method" : "POST",
+      "postIntrospectionQuery" : true,
+      "options" : {
+        "headers": {
+          "user-agent" : "JS GraphQL"
+        }
+      }
+    }
+  },
   "endpoints": [
     {
       "name": "Medusa",

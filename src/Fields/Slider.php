@@ -2,14 +2,12 @@
 
 namespace Galahad\Medusa\Fields;
 
+use Galahad\Medusa\Fields\Concerns\HasIntValue;
 use Illuminate\Support\Arr;
 
 class Slider extends Field
 {
-	public function defaultInitialValue()
-	{
-		return 0;
-	}
+	use HasIntValue;
 	
 	protected function configureRules()
 	{

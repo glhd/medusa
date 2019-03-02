@@ -35,12 +35,6 @@ class FrontendController extends Controller
 		$config = json_encode([
 			'basepath' => "{$path}/web",
 			'graphql_endpoint' => url("{$path}/graphql"),
-			'content_types' => medusa()->allContentTypes()
-				->toBase()
-				->map(function(ContentType $content_type) {
-					return new ContentTypeSerializer($content_type);
-				})
-				->toArray(),
 		]);
 		
 		return new HtmlString("<script>window.__MEDUSA__ = {$config}</script>");

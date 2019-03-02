@@ -4,7 +4,7 @@ schema {
 }
 
 type ContentType {
-    id: String!
+    id: ID!
     title: String!
     is_singleton: Boolean!
     fields: [Field!]!
@@ -13,7 +13,7 @@ type ContentType {
 }
 
 type Field {
-    name: String!
+    name: ID!
     component: String!
     display_name: String!
     label: String!
@@ -24,7 +24,7 @@ type Field {
 }
 
 type Content {
-    id: String!
+    id: ID!
     content_type: ContentType!
     description: String!
     slug: String!
@@ -41,17 +41,17 @@ type PaginatedContent {
 
 type Query {
     allContentTypes: [ContentType!]!
-    getContent(id: String!): Content
+    getContent(id: ID!): Content
     allContent(page: Int): PaginatedContent!
 }
 
 type Mutation {
     createContent(content: ContentInput!): Content
-    updateContent(id: String!, content: ContentInput!): Content
+    updateContent(id: ID!, data: String!): Content
 }
 
 input ContentInput {
-    content_type_id: String!
+    content_type_id: ID!
     data: String!
 }
 

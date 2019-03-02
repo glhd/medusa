@@ -10,6 +10,8 @@ use InvalidArgumentException;
 
 abstract class Field implements FieldContract
 {
+	use Concerns\HasTextValue; // FIXME: Just adding this for now
+	
 	/**
 	 * @var string
 	 */
