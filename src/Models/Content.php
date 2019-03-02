@@ -38,9 +38,9 @@ class Content extends Model implements ContentContract
 		parent::__construct($attributes);
 	}
 	
-	public function paginate($per_page = null, $page_name = 'page', $page = null) : LengthAwarePaginator
+	public function getId()
 	{
-		return $this->newQuery()->paginate($per_page, null, $page_name, $page);
+		return $this->id;
 	}
 	
 	public function getContentType() : ContentType

@@ -26,19 +26,5 @@ export default (fields, initial) => {
 		return changed;
 	}, [data, initial]);
 	
-	const onChange = (name) => (value) => {
-		setData({
-			...data,
-			[name]: value,
-		});
-		
-		if (!touched[name]) {
-			setTouched({
-				...touched,
-				[name]: true,
-			});
-		}
-	};
-	
-	return [data, changed, touched, onChange];
+	return { data, changed, touched, setData, setTouched };
 };

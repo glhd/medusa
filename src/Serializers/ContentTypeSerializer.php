@@ -23,13 +23,12 @@ class ContentTypeSerializer implements Arrayable, Jsonable, JsonSerializable
 	public function toArray()
 	{
 		return [
-			'content_type' => [
-				'id' => $this->content_type->getId(),
-				'title' => $this->content_type->getTitle(),
-			],
+			'id' => $this->content_type->getId(),
+			'title' => $this->content_type->getTitle(),
+			'is_singleton' => $this->content_type->isSingleton(),
 			'fields' => $this->fieldsToArray(),
-			'rules' => $this->fieldsToRules(),
-			'messages' => $this->fieldsToMessages(),
+			'rules' => json_encode($this->fieldsToRules()),
+			'messages' => json_encode($this->fieldsToMessages()),
 		];
 	}
 	
@@ -47,9 +46,10 @@ class ContentTypeSerializer implements Arrayable, Jsonable, JsonSerializable
 	{
 		return $this->content_type->getFields()
 			->toBase()
-			->mapWithKeys(function(Field $field) {
-				return [$field->getName() => new FieldSerializer($field)];
+			->map(function(Field $field) {
+				return new FieldSerializer($field);
 			})
+			->values()
 			->toArray();
 	}
 	

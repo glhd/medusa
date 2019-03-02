@@ -43,8 +43,10 @@ export default function Blocks(props) {
 			onChange(changed);
 		},
 		onDelete: (index) => {
-			setBlocks(reorder(blocks, index));
-			onChange(reorder(block_values, index));
+			if (confirm('Are you sure you want to delete this?')) {
+				setBlocks(reorder(blocks, index));
+				onChange(reorder(block_values, index));
+			}
 		},
 	};
 	
@@ -128,17 +130,7 @@ const BlockField = ({ index, block, value, provided, snapshot }) => {
 	const { innerRef, draggableProps, dragHandleProps } = provided;
 	const { isDragging } = snapshot;
 	
-	const onBlockDelete = (e) => {
-		e.preventDefault();
-		
-		if (confirm('Are you sure you want to delete this block?')) {
-			onDelete(index);
-		}
-	};
-	
-	const onBlockClone = (e) => {
-		e.preventDefault();
-		
+	const onBlockClone = () => {
 		if (confirm('Are you sure you want to clone this block?')) {
 			onAdd(Field, {
 				...props,
@@ -180,11 +172,11 @@ const BlockField = ({ index, block, value, provided, snapshot }) => {
 						<FontAwesomeIcon icon={faChevronCircleDown} size="lg" />
 					</MenuButton>
 					<MenuList className="rounded border-grey-light shadow px-0 py-1">
-						<MenuItem className="px-4 py-2" onSelect={onBlockClone}>
+						<MenuItem className="px-4 py-2" onSelect={() => onBlockClone()}>
 							<FontAwesomeIcon className="mr-2" icon={faClone} fixedWidth={true} />
 							Duplicate
 						</MenuItem>
-						<MenuItem className="px-4 py-2" onSelect={() => onBlockDelete()}>
+						<MenuItem className="px-4 py-2" onSelect={() => onDelete()}>
 							<FontAwesomeIcon className="mr-2" icon={faTrashAlt} fixedWidth={true} />
 							Delete
 						</MenuItem>
@@ -215,21 +207,3 @@ const reorder = (list, from, to = null) => {
 	}
 	return result;
 };
-
-// Font Awesome License - https://fontawesome.com/license
-
-function TrashIcon({ width = 16, height = 16 }) {
-	return (
-		<svg xmlns="http://www.w3.org/2000/svg" width={ width } height={ height } style={ { fill: 'currentColor' } } viewBox="0 0 512 512">
-			<path d="M381.6 80l-34-56.7C338.9 8.8 323.3 0 306.4 0H205.6c-16.9 0-32.5 8.8-41.2 23.3l-34 56.7H40c-13.3 0-24 10.7-24 24v12c0 6.6 5.4 12 12 12h16.4L76 468.4c2.3 24.7 23 43.6 47.8 43.6h264.5c24.8 0 45.5-18.9 47.8-43.6L467.6 128H484c6.6 0 12-5.4 12-12v-12c0-13.3-10.7-24-24-24h-90.4zm-176-32h100.8l19.2 32H186.4l19.2-32zm182.6 416H123.8L92.6 128h326.7l-31.1 336z" />
-		</svg>
-	);
-}
-
-function CloneIcon({ width = 16, height = 16 }) {
-	return (
-		<svg xmlns="http://www.w3.org/2000/svg" width={ width } height={ height } style={ { fill: 'currentColor' } } viewBox="0 0 512 512">
-			<path d="M464 0H144c-26.51 0-48 21.49-48 48v48H48c-26.51 0-48 21.49-48 48v320c0 26.51 21.49 48 48 48h320c26.51 0 48-21.49 48-48v-48h48c26.51 0 48-21.49 48-48V48c0-26.51-21.49-48-48-48zM362 464H54a6 6 0 0 1-6-6V150a6 6 0 0 1 6-6h42v224c0 26.51 21.49 48 48 48h224v42a6 6 0 0 1-6 6zm96-96H150a6 6 0 0 1-6-6V54a6 6 0 0 1 6-6h308a6 6 0 0 1 6 6v308a6 6 0 0 1-6 6z" />
-		</svg>
-	);
-}

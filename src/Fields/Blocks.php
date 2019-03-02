@@ -2,11 +2,10 @@
 
 namespace Galahad\Medusa\Fields;
 
-use Galahad\Medusa\Serializers\FieldSerializer;
 use Galahad\Medusa\Collections\FieldCollection;
 use Galahad\Medusa\Contracts\Field as FieldContract;
+use Galahad\Medusa\Serializers\FieldSerializer;
 use RuntimeException;
-use stdClass;
 
 class Blocks extends Field
 {

@@ -14,7 +14,7 @@ export default function RichText(props) {
 		linkAutoPrefix: 'https://',
 	};
 	
-	let wysiwyg = null;
+	let wysiwyg = <div className="bg-grey-lightest border rounded p-2 text-grey-dark font-semibold">Loading…</div>;
 	const loaded = useDependencies();
 	
 	if (loaded) {

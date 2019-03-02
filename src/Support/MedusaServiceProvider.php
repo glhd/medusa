@@ -3,11 +3,14 @@
 namespace Galahad\Medusa\Support;
 
 use Galahad\Medusa\Contracts\Content;
+use Galahad\Medusa\Contracts\ContentResolver;
 use Galahad\Medusa\Contracts\ContentTypeResolver;
 use Galahad\Medusa\Exceptions\ConfigurationException;
-use Galahad\Medusa\Http\Controllers\ContentController;
+use Galahad\Medusa\Http\Controllers\ApiController;
+use Galahad\Medusa\Http\Controllers\FrontendController;
 use Galahad\Medusa\Medusa;
-use Galahad\Medusa\Resolvers\ConventionalResolver;
+use Galahad\Medusa\Resolvers\Content\EloquentResolver;
+use Galahad\Medusa\Resolvers\ContentType\ConventionalResolver;
 use Galahad\Medusa\View\MedusaView;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Config\Repository;
@@ -15,6 +18,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
 
@@ -39,17 +43,23 @@ class MedusaServiceProvider extends ServiceProvider
 	{
 		$this->mergeConfigFrom($this->basePath('config/medusa.php'), 'medusa');
 		
-		$this->app->singleton('galahad.medusa.resolver', function(Application $app) {
+		$this->app->singleton('glhd.medusa.resolvers.content_type', function(Application $app) {
 			return new ConventionalResolver($app);
 		});
 		
-		$this->app->alias('galahad.medusa.resolver', ContentTypeResolver::class);
+		$this->app->alias('glhd.medusa.resolvers.content_type', ContentTypeResolver::class);
+		
+		$this->app->singleton('glhd.medusa.resolvers.content', function(Application $app) {
+			return new EloquentResolver($app->make(Content::class));
+		});
+		
+		$this->app->alias('glhd.medusa.resolvers.content', ContentResolver::class);
 		
 		$this->app->singleton('galahad.medusa', function(Application $app) {
 			return (new Medusa(
 				$app->make(Dispatcher::class),
 				$app['config']['medusa']
-			))->setContentTypeResolver($app->make('galahad.medusa.resolver'));
+			))->setContentTypeResolver($app->make('glhd.medusa.resolvers.content_type'));
 		});
 		
 		$this->app->alias('galahad.medusa', Medusa::class);
@@ -96,24 +106,22 @@ class MedusaServiceProvider extends ServiceProvider
 	
 	protected function bootRoutes(Registrar $registrar) : self
 	{
-		$group = [
-			'middleware' => $this->config('middleware'),
-			'prefix' => $this->config('path'),
-			'as' => 'medusa.',
-		];
+		$path = $this->config('path');
 		
-		$controller = ContentController::class;
+		if ($registrar instanceof Router) {
+			$registrar
+				->redirect($path, "{$path}/web")
+				->middleware($this->config('middleware'));
+		}
 		
-		$registrar->group($group, function() use ($registrar, $controller) {
-			$registrar->get('/', "$controller@index")->name('index');
-			$registrar->get('/create/{content_type}', "$controller@create")->name('create');
-			$registrar->post('/', "$controller@store")->name('store');
-			$registrar->get('/{content}', "$controller@show")->name('show');
-			$registrar->get('/{content}/edit', "$controller@edit")->name('edit');
-			$registrar->put('/{content}', "$controller@update")->name('update');
-			$registrar->patch('/{content}', "$controller@update");
-			$registrar->delete('/{content}', "$controller@destroy")->name('destroy');
-		});
+		$registrar
+			->get("{$path}/web/{any?}", FrontendController::class)
+			->middleware($this->config('middleware'))
+			->where('any', '.*');
+		
+		$registrar
+			->any("{$path}/graphql", ApiController::class);
+			//->middleware($this->config('middleware')); // FIXME
 		
 		return $this;
 	}
@@ -124,7 +132,7 @@ class MedusaServiceProvider extends ServiceProvider
 			$view_class = MedusaView::class;
 			$factory_class = Factory::class;
 			$base_path = $this->basePath();
-			return "<?php echo (new {$view_class}(app('galahad.medusa.resolver'), app({$factory_class}::class), '{$base_path}', $expression)); ?>";
+			return "<?php echo (new {$view_class}(app('glhd.medusa.resolvers.content_type'), app({$factory_class}::class), '{$base_path}', $expression)); ?>";
 		});
 		
 		return $this;

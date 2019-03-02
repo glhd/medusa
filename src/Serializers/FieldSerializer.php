@@ -26,13 +26,14 @@ class FieldSerializer implements Arrayable, Jsonable, JsonSerializable
 		$field = $this->field;
 		
 		return [
-			'id' => 'medusa-'.$field->getName().'-'.(static::$next_id++),
-			'component' => $field->getComponent(),
 			'name' => $field->getName(),
+			'component' => $field->getComponent(),
 			'display_name' => $field->getDisplayName(),
 			'label' => $field->getLabel(),
-			'config' => $field->getConfig(),
-			'initial_value' => $field->getInitialValue(),
+			'config' => json_encode($field->getConfig()),
+			'initial_value' => json_encode($field->getInitialValue()),
+			'rules' => json_encode($field->getRules()),
+			'messages' => json_encode($field->getMessages()),
 		];
 	}
 	

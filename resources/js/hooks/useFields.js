@@ -16,13 +16,13 @@ export default function useFields(fields) {
 					};
 				}
 				
-				throw `Unable to find field component "${field.component}"`;
+				throw `Unable to find field component "${ field.component }"`;
 			});
 	}, [fields, data, changed, touched, errors, onChange, onDependencies]);
 }
 
 function mapFieldProps(field, medusa) {
-	const { data, changed, touched, errors, onChange, onDependencies } = medusa;
+	const { data, changed, touched, errors, dependencies, setDependencies, setData, setTouched } = medusa;
 	const { name } = field;
 	
 	return {
@@ -32,7 +32,22 @@ function mapFieldProps(field, medusa) {
 		changed: changed[name],
 		touched: touched[name],
 		errors: name in errors ? errors[name] : [],
-		onChange: onChange(name),
-		onDependencies: onDependencies(name),
+		onChange: (value) => {
+			setData({
+				...data,
+				[name]: value,
+			});
+			
+			if (!touched[name]) {
+				setTouched({
+					...touched,
+					[name]: true,
+				});
+			}
+		},
+		onDependencies: (value) => setDependencies({
+			...dependencies,
+			[name]: value,
+		}),
 	};
 }

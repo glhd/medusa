@@ -2,12 +2,9 @@
 
 namespace Galahad\Medusa\Contracts;
 
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Contracts\Routing\UrlRoutable;
-
-interface Content extends UrlRoutable
+interface Content
 {
-	public function paginate($per_page = null, $page_name = 'page', $page = null) : LengthAwarePaginator;
+	public function getId();
 	
 	public function getContentType() : ContentType;
 	

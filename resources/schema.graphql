@@ -1,0 +1,57 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type ContentType {
+    id: String!
+    title: String!
+    is_singleton: Boolean!
+    fields: [Field!]!
+    rules: String!
+    messages: String!
+}
+
+type Field {
+    name: String!
+    component: String!
+    display_name: String!
+    label: String!
+    config: String!
+    initial_value: String!
+    rules: String!
+    messages: String!
+}
+
+type Content {
+    id: String!
+    content_type: ContentType!
+    description: String!
+    slug: String!
+    data: String!
+}
+
+type PaginatedContent {
+    total: Int!
+    per_page: Int!
+    current_page: Int!
+    last_page: Int!
+    content: [Content]!
+}
+
+type Query {
+    allContentTypes: [ContentType!]!
+    getContent(id: String!): Content
+    allContent(page: Int): PaginatedContent!
+}
+
+type Mutation {
+    createContent(content: ContentInput!): Content
+    updateContent(id: String!, content: ContentInput!): Content
+}
+
+input ContentInput {
+    content_type_id: String!
+    data: String!
+}
+

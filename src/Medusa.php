@@ -38,4 +38,13 @@ class Medusa
 		
 		return $this;
 	}
+	
+	public function basePath(string $path = null) : string
+	{
+		$base_path = rtrim(dirname(__DIR__), DIRECTORY_SEPARATOR);
+		
+		return null === $path
+			? $base_path
+			: $base_path.DIRECTORY_SEPARATOR.ltrim($path, DIRECTORY_SEPARATOR);
+	}
 }
