@@ -9,7 +9,7 @@ import { GET_CONTENT } from "../graphql/queries";
 import { UPDATE_CONTENT } from "../graphql/mutations";
 import ErrorBoundary from "../components/ErrorBoundary";
 
-export default function Content({ id }) {
+export default function UpdateContent({ id }) {
 	const { result, error, loading } = useQuery(GET_CONTENT, { variables: { id } });
 	const { addNotification } = useAppContext();
 	
@@ -26,23 +26,27 @@ export default function Content({ id }) {
 	
 	const { content_type } = content;
 	
+	const mutation_config = {
+		mutation: UPDATE_CONTENT,
+		onCompleted: () => {
+			setLastSaved(new Date());
+			addNotification(`Your changes to this ${ content_type.title } have been saved!`, { successful: true });
+		},
+		onError: () => {
+			addNotification(`Therre was an error saving this ${ content_type.title }.`, { dangerous: true, timeout: 7500 });
+		},
+	};
+	
 	return (
 		<ErrorBoundary name="the Content component">
-			<Mutation mutation={ UPDATE_CONTENT }>
+			<Mutation {...mutation_config}>
 				{ (updateContent, { loading: saving }) => {
 					const onSave = (data) => {
 						updateContent({
 							variables: {
 								id: content.id,
 								data: JSON.stringify(data)
-							},
-							onError: () => {
-								addNotification(`Therre was an error saving this ${ content_type.title }.`, { dangerous: true, timeout: 7500 });
-							},
-							onCompleted: () => {
-								setLastSaved(new Date());
-								addNotification(`Your changes to this ${ content_type.title } have been saved!`, { successful: true });
-							},
+							}
 						});
 					};
 					

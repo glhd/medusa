@@ -116,8 +116,8 @@ class ApiController extends Controller
 	
 	protected function resolveCreateContent($source, $args, $context, ResolveInfo $info)
 	{
-		$content_type = medusa()->resolveContentType($args['content']['content_type_id']);
-		$data = json_decode($args['content']['data'], true);
+		$content_type = medusa()->resolveContentType($args['content_type_id']);
+		$data = json_decode($args['data'], true);
 		
 		$validator = new ContentValidator(app(Translator::class), $data, $content_type);
 		

@@ -5,8 +5,8 @@ import { ApolloProvider } from 'react-apollo';
 import AppProvider from './AppProvider';
 import Layout from './components/Layout';
 import Home from './views/Home';
-import Content from './views/Content';
-import NewContent from './views/NewContent';
+import UpdateContent from './views/UpdateContent';
+import CreateContent from './views/CreateContent';
 import ErrorBoundary from "./components/ErrorBoundary";
 
 export default function App(context) {
@@ -29,8 +29,8 @@ export default function App(context) {
 						<Router basepath={basepath}>
 							<Home path="/" />
 							<Home path="/page/:page" />
-							<Content path="/content/:id" />
-							<NewContent path="/new/:content_type_id" />
+							<UpdateContent path="/content/:id" />
+							<CreateContent path="/new/:content_type_id" />
 						</Router>
 					</Layout>
 				</ErrorBoundary>
