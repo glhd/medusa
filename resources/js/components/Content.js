@@ -1,117 +1,68 @@
 import React, { useState } from 'react';
-import gql from 'graphql-tag';
 import { useMutation, useQuery } from 'react-apollo-hooks';
 import Editor from './Editor';
 import moment from "moment";
 import useAppContext from '../hooks/useAppContext';
 import Loading from './Loading';
+import { GET_CONTENT, UPDATE_CONTENT } from "../queries";
 
 export default ({ id }) => {
-	const { data, error, loading } = useQuery(content, { variables: { id } });
+	const { data, error, loading } = useQuery(GET_CONTENT, { variables: { id } });
 	const { addNotification } = useAppContext();
 	
 	const [saving, setSaving] = useState(false);
 	const [last_saved, setLastSaved] = useState(null); // FIXME: This won't update unless we re-render
 	
-	const mutation = useMutation(updateContent);
+	const mutation = useMutation(UPDATE_CONTENT);
 	
-	if (loading) {
+	if (loading || error) {
 		return <Loading />;
 	}
 	
-	const result = data.getContent;
-	const existing = JSON.parse(result.data);
+	const content = {
+		...data.getContent,
+		data: JSON.parse(data.getContent.data),
+	};
+	
+	const { content_type } = content;
 	
 	const onSave = (data) => {
 		setSaving(true);
 		mutation({
 			variables: {
-				id: result.id,
+				id: content.id,
 				data: JSON.stringify(data)
 			},
 			update: () => {
 				setSaving(false);
 				setLastSaved(new Date());
-				addNotification(`Your changes to this ${result.content_type.title} have been saved!`);
+				addNotification(`Your changes to this ${ content.content_type.title } have been saved!`, { successful: true });
 			}
 		}).catch(err => {
 			setSaving(false);
-			addNotification(`Therre was an error saving this ${result.content_type.title}.`, { dangerous: true, timeout: 7500 });
+			addNotification(`Therre was an error saving this ${ content.content_type.title }.`, { dangerous: true, timeout: 7500 });
 		});
 	};
 	
 	return (
-		<div>
+		<>
 			<h1 className="text-lg font-semibold text-grey-dark mb-6 flex justify-between items-baseline">
 				<span>
-					Update { result.content_type.title }
+					Update { content.content_type.title }
 				</span>
 				{ last_saved && (
 					<span className="text-grey font-normal text-sm">
 						Last saved { moment(last_saved).fromNow() }
 					</span>
-				)}
+				) }
 			</h1>
 			<Editor
-				content_type={result.content_type}
-				id={result.id}
-				existing={existing}
-				onSave={onSave}
-				saving={saving}
+				content_type={ content.content_type }
+				id={ content.id }
+				existing={ content.data }
+				onSave={ onSave }
+				saving={ saving }
 			/>
-		</div>
+		</>
 	);
 };
-
-const content = gql`
-    query Content($id: ID!) {
-        getContent(id: $id) {
-            id
-            description
-            content_type {
-                id
-                title
-                is_singleton
-                fields {
-                    name
-                    component
-                    display_name
-                    label
-                    config
-                    initial_value
-                }
-                rules
-                messages
-            }
-            data
-        }
-    }
-`;
-
-const updateContent = gql`
-    mutation updateContent($id: ID!, $data: String!) {
-        updateContent(
-            id: $id,
-	        data: $data,
-        ) {
-            id
-            description
-            content_type {
-                id
-                title
-                is_singleton
-                fields {
-                    name
-                    component
-                    display_name
-                    label
-                    config
-                    initial_value
-                }
-                rules
-                messages
-            }
-            data
-        }
-    }
-`;

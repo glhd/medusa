@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import useDebounce from './useDebounce';
 import Validator from 'validatorjs';
 
-export default function useValidation(data, rules, touched = {}, server_errors = {}) {
+export default function useValidation(data, rules_json, touched = {}) {
 	const [errors, setErrors] = useState({});
 	
-	// FIXME: Server errors may have duplicates, and aren't showing because of changed/touched checks
-	// FIXME: I've just removed them for now
+	const rules = JSON.parse(rules_json);
 	
 	useDebounce(({ isStale }) => {
 		const validator = new Validator(data, rules);
@@ -16,16 +15,7 @@ export default function useValidation(data, rules, touched = {}, server_errors =
 				return;
 			}
 			
-			const errors = validator.errors.all();
-			
-			Object.entries(server_errors).forEach(([key, value]) => {
-				if (!touched[key]) {
-					errors[key] = errors[key] || [];
-					errors[key].push(value);
-				}
-			});
-			
-			setErrors(errors);
+			setErrors(validator.errors.all());
 		};
 		
 		validator.checkAsync(handler, handler);

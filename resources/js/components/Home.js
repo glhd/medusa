@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Link } from '@reach/router';
-import gql from 'graphql-tag';
 import { useQuery } from 'react-apollo-hooks';
 import Loading from "./Loading";
+import { ALL_CONTENT } from '../queries';
+import Debugger from "./Debugger";
 
-export default ({ page }) => {
-	const { data, error, loading } = useQuery(currentPage);
+export default ({ page = 1 }) => {
+	const { data, error, loading } = useQuery(ALL_CONTENT, { variables: page });
 	
 	if (loading) {
 		return <Loading />;
+	}
+	
+	if (error) {
+		return <Debugger error={error} />; // FIXME
 	}
 	
 	const { total, per_page, content } = data.allContent;
@@ -23,10 +28,10 @@ export default ({ page }) => {
 						Content Type
 					</th>
 					<th className="border-b border-grey-lighter p-2 text-left text-sm font-semibold text-grey-dark">
-						URL Slug
+						Description
 					</th>
 					<th className="border-b border-grey-lighter p-2 text-left text-sm font-semibold text-grey-dark">
-						Description
+						URL Slug
 					</th>
 				</tr>
 			</thead>
@@ -38,14 +43,14 @@ export default ({ page }) => {
 								{ content.content_type.title }
 							</span>
 						</td>
-						<td className="px-2 py-4">
-							<Link to={ `content/${ content.id }` } className="font-mono text-sm text-grey no-underline hover:text-blue hover:underline">
-								{ content.slug }
+						<td>
+							<Link to={ `content/${ content.id }` } className="inline-block px-2 py-4 font-semibold text-grey-darker no-underline hover:underline hover:text-blue">
+								{ content.description }
 							</Link>
 						</td>
-						<td className="px-2 py-4">
-							<Link to={ `content/${ content.id }` } className="font-semibold text-grey-darker no-underline hover:underline hover:text-blue">
-								{ content.description }
+						<td>
+							<Link to={ `content/${ content.id }` } className="inline-block px-2 py-4 font-mono text-sm text-grey no-underline hover:text-blue hover:underline">
+								{ content.slug }
 							</Link>
 						</td>
 					</tr>
@@ -54,20 +59,3 @@ export default ({ page }) => {
 		</table>
 	);
 };
-
-const currentPage = gql`
-    {
-        allContent {
-            total
-            per_page
-            content {
-                id
-                slug
-                description
-                content_type {
-                    title
-                }
-            }
-        }
-    }
-`;

@@ -20,7 +20,7 @@ export default () => {
 	const addNotification = (message, config = {}) => {
 		const id = Symbol(message);
 		const created_at = moment();
-		const { dangerous = false, timeout = 5000 } = config;
+		const { dangerous = false, successful = false, timeout = 5000 } = config;
 		
 		setNotifications([...notifications, { id, message, dangerous, timeout, created_at }]);
 		

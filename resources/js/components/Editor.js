@@ -3,7 +3,6 @@ import Fields from './Fields';
 import { EditorContext } from '../hooks/useEditorContext';
 import useData from "../hooks/useData";
 import useValidation from "../hooks/useValidation";
-import Debugger from "./Debugger";
 
 export default (props) => {
 	const { id, existing, content_type, onSave, saving } = props;
@@ -15,19 +14,18 @@ export default (props) => {
 	
 	const context = { data, changed, touched, errors, dependencies, setDependencies, setData, setTouched };
 	
-	const disable_save = !!saving;
+	const disable_save = (saving || Object.keys(errors).length > 0);
 	const save_label = id
 		? `Save Changes to ${ content_type.title }`
 		: `Save New ${ content_type.title }`;
 	
 	return (
 		<EditorContext.Provider value={ context }>
-			<Debugger errors={errors} rules={rules} />
 			<Fields fields={ fields } />
 			<button
 				disabled={ disable_save }
-				className="bg-blue border-blue-dark px-6 py-3 text-white rounded hover:bg-blue-dark hover:shadow"
-				onClick={ () => onSave(data) }
+				onClick={ (e) => onSave(data) }
+				className={`${disable_save ? 'bg-grey-lighter border-grey-light text-grey-darker cursor-not-allowed' : 'bg-blue border-blue-dark text-white hover:bg-blue-dark hover:shadow cursor-pointer'} px-6 py-3 rounded`}
 			>
 				{ saving ? 'Saving…' : save_label }
 			</button>

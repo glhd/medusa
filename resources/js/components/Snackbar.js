@@ -8,10 +8,16 @@ export default ({ message }) => {
 		<div className="fixed pin-l pin-r pin-b p-8">
 			<div className="container mx-auto text-right">
 				{ notifications.map(notification => {
-					const { message, dangerous } = notification;
-					const style = dangerous
-						? 'bg-red-darker text-lg text-white'
-						: 'bg-grey-dark text-white';
+					const { message, dangerous, successful } = notification;
+					
+					let style = 'bg-grey text-white';
+					if (successful) {
+						style = 'bg-green-dark text-white';
+					}
+					if (dangerous) {
+						style = 'bg-red-darker text-lg text-white';
+					}
+					
 					return (
 						<div className={`inline-block ${style} font-semibold py-3 px-6 rounded-full shadow-lg`}>
 							{ message }
