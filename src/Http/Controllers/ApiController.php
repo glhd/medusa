@@ -7,6 +7,7 @@ use ArrayAccess;
 use Galahad\Medusa\Contracts\Content;
 use Galahad\Medusa\Contracts\ContentResolver;
 use Galahad\Medusa\Contracts\ContentType;
+use Galahad\Medusa\Contracts\ContentTypeResolver;
 use Galahad\Medusa\Exceptions\ValidationException;
 use Galahad\Medusa\Http\Middleware\DispatchMedusaEvent;
 use Galahad\Medusa\Serializers\ContentSerializer;
@@ -104,6 +105,13 @@ class ApiController extends Controller
 			})
 			->values()
 			->toArray();
+	}
+	
+	protected function resolveGetContentType($source, $args, $context, ResolveInfo $info)
+	{
+		$selection = $info->getFieldSelection(1);
+		$content_type = app(ContentTypeResolver::class)->resolve($args['id']);
+		return (new ContentTypeSerializer($content_type))->setKeys($selection)->toArray();
 	}
 	
 	protected function resolveCreateContent($source, $args, $context, ResolveInfo $info)

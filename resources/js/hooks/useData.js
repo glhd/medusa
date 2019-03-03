@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 
-export default (fields, initial) => {
+export default function useData(fields, initial) {
 	const [data, setData] = useState(initial);
 	
 	const [touched, setTouched] = useState(() => {

@@ -1,6 +1,6 @@
 import React from 'react';
 import Debugger from "../Debugger";
 
-export default (props) => {
+export default function DateRange(props) {
 	return <Debugger {...props} />;
 };

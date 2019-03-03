@@ -40,18 +40,14 @@ type PaginatedContent {
 }
 
 type Query {
+    getContentType(id: ID!): ContentType!
     allContentTypes: [ContentType!]!
     getContent(id: ID!): Content
     allContent(page: Int): PaginatedContent!
 }
 
 type Mutation {
-    createContent(content: ContentInput!): Content
+    createContent(content_type_id: ID!, data: String!): Content
     updateContent(id: ID!, data: String!): Content
-}
-
-input ContentInput {
-    content_type_id: ID!
-    data: String!
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import Group from '../Form/Group';
+import Group from '../Group';
 
 export default function Slug(props) {
 	const { field, value, onChange } = props;

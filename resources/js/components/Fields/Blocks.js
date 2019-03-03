@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronCircleDown } from '@fortawesome/free-solid-svg-icons';
 import { faTrashAlt, faClone, faPlusSquare  } from '@fortawesome/free-regular-svg-icons';
 import useFields from "../../hooks/useFields";
-import Group from "../Form/Group";
+import Group from "../Group";
 
 const BlocksContext = React.createContext({});
 const useBlockContext = () => useContext(BlocksContext);

@@ -1,7 +1,7 @@
 import React from 'react';
 import useAppContext from '../hooks/useAppContext';
 
-export default ({ message }) => {
+export default function Snackbar({ message }) {
 	const { notifications } = useAppContext();
 	
 	return (

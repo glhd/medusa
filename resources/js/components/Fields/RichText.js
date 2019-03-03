@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import FroalaEditor from 'react-froala-wysiwyg';
 import { loadCSS } from 'fg-loadcss';
-import Group from '../Form/Group';
+import Group from '../Group';
 
 let dependenciesLoaded = false;
 

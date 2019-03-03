@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import moment from "moment";
 
-export default () => {
+export default function useNotifications() {
 	const [notifications, setNotifications] = useState([]);
 	
 	const interval = useRef();

@@ -4,7 +4,7 @@ import { EditorContext } from '../hooks/useEditorContext';
 import useData from "../hooks/useData";
 import useValidation from "../hooks/useValidation";
 
-export default (props) => {
+export default function Editor(props) {
 	const { id, existing, content_type, onSave, saving } = props;
 	const { fields, rules, messages } = content_type;
 	const initial_data = initialData(fields, existing);
