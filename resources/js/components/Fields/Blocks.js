@@ -152,7 +152,7 @@ const BlockField = ({ index, block, value, provided, snapshot }) => {
 					marginRight: '8px',
 					background: `linear-gradient(90deg, #fff 2px, transparent 1%) center,
 						linear-gradient(#fff 2px, transparent 1%) center,
-						#eee`,
+						#dadada`,
 					backgroundSize: '4px 4px',
 				} }
 				{ ...dragHandleProps }

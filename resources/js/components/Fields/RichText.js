@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import FroalaEditor from 'react-froala-wysiwyg';
-import { loadCSS } from 'fg-loadcss';
 import Group from '../Group';
 
-let dependenciesLoaded = false;
+import 'froala-editor/js/froala_editor.pkgd.min.js';
+import 'froala-editor/css/froala_style.min.css';
+import 'froala-editor/css/froala_editor.pkgd.min.css';
+import 'font-awesome/css/font-awesome.css';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/lib/codemirror';
+import 'codemirror/mode/xml/xml';
 
 export default function RichText(props) {
 	const { field, value, onChange } = props;
@@ -14,64 +19,15 @@ export default function RichText(props) {
 		linkAutoPrefix: 'https://',
 	};
 	
-	let wysiwyg = <div className="bg-grey-lightest border rounded p-2 text-grey-dark font-semibold">Loading…</div>;
-	const loaded = useDependencies();
-	
-	if (loaded) {
-		wysiwyg = <FroalaEditor
-			id={id}
-			tag="textarea"
-			model={ value }
-			config={ editor_config }
-			onModelChange={ onChange }
-		/>;
-	}
-	
 	return (
 		<Group { ...props }>
-			{ wysiwyg }
+			<FroalaEditor
+				id={id}
+				tag="textarea"
+				model={ value }
+				config={ editor_config }
+				onModelChange={ onChange }
+			/>
 		</Group>
 	);
 };
-
-function loadStyle(src) {
-	return new Promise(resolve => {
-		loadCSS(src).onloadcssdefined(resolve);
-	});
-}
-
-function loadScript(src) {
-	return new Promise((resolve, reject) => {
-		const script = document.createElement('script');
-		script.onload = resolve;
-		script.onerror = reject;
-		script.src = src;
-		
-		const siblingElement = document.getElementsByTagName('link')[0];
-		siblingElement.parentNode.insertBefore(script, siblingElement);
-	});
-}
-
-function useDependencies() {
-	const [loaded, setLoaded] = useState(dependenciesLoaded);
-	
-	useEffect(() => {
-		// TODO: Conditionally load
-		Promise.all([
-			loadStyle('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css'),
-			loadStyle('https://cdn.jsdelivr.net/npm/froala-editor@2.9.3/css/froala_editor.pkgd.min.css'),
-			loadStyle('https://cdn.jsdelivr.net/npm/froala-editor@2.9.3/css/froala_style.min.css'),
-			loadScript('https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.0/jquery.min.js'),
-			loadScript('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/codemirror.min.js'),
-			loadScript('https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.25.0/mode/xml/xml.min.js'),
-			loadScript('https://cdn.jsdelivr.net/npm/froala-editor@2.9.3/js/froala_editor.pkgd.min.js'),
-		]).then(() => {
-			setTimeout(() => {
-				dependenciesLoaded = true;
-				setLoaded(true);
-			}, 100);
-		});
-	}, []);
-	
-	return loaded;
-}

@@ -5,6 +5,9 @@ LaravelMix
 	.disableSuccessNotifications()
 	.setPublicPath('./resources/js/dist')
 	.react('resources/js/medusa.js', 'resources/js/dist/')
+	.autoload({
+		jquery: ['$', 'window.jQuery']
+	})
 	.webpackConfig(() => {
 		const plugins = [];
 		const loaders = ['style-loader'];
