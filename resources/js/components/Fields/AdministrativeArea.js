@@ -1,11 +1,22 @@
 import React from 'react';
-// import Group from '../Form/Group';
+import Group from '../Group';
 import Debugger from '../Debugger';
-// import useReferencedField from '../../hooks/useReferencedField';
+import useReferencedField from '../../hooks/useReferencedField';
 
 export default function AdministrativeArea(props) {
-	return <Debugger {...props} />;
-	// const { id, config, all_data, field } = props; // FIXME Replace all_data with medusacontext
+	const { id, field, value } = props;
+	const { config } = field;
+	const country_field = 'country_field' in config
+		? config['country_field']
+		: 'country';
+	const country = useReferencedField(country_field, 'US');
+	
+	return (
+		<Group {...props}>
+			<Debugger country={country} />
+		</Group>
+	);
+	
 	// const { value, onChange } = useFieldContext(field);
 	//
 	// const country = useReferencedField(all_data, config, 'country_field', 'country'); // TODO: This maybe could be passed as props?

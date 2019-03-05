@@ -3,46 +3,41 @@
 namespace Galahad\Medusa\Serializers;
 
 use Galahad\Medusa\Contracts\Field;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Jsonable;
-use JsonSerializable;
 
-class FieldSerializer implements Arrayable, Jsonable, JsonSerializable
+class FieldSerializer extends Serializer
 {
-	protected static $next_id = 1;
-	
 	/**
 	 * @var \Galahad\Medusa\Contracts\Field
 	 */
-	protected $field;
+	protected $target;
+	
+	/**
+	 * @var array
+	 */
+	protected $keys = ['name', 'component', 'display_name', 'label', 'config', 'initial_value', 'rules', 'messages'];
 	
 	public function __construct(Field $field)
 	{
-		$this->field = $field;
+		$this->target = $field;
 	}
 	
-	public function toArray()
+	protected function serializeConfig() : string
 	{
-		$field = $this->field;
-		
-		return [
-			'id' => 'medusa-'.$field->getName().'-'.(static::$next_id++),
-			'component' => $field->getComponent(),
-			'name' => $field->getName(),
-			'display_name' => $field->getDisplayName(),
-			'label' => $field->getLabel(),
-			'config' => $field->getConfig(),
-			'initial_value' => $field->getInitialValue(),
-		];
+		return json_encode($this->target->getConfig());
 	}
 	
-	public function toJson($options = 0)
+	protected function serializeInitialValue() : string
 	{
-		return json_encode($this->toArray(), $options);
+		return json_encode($this->target->getInitialValue());
 	}
 	
-	public function jsonSerialize()
+	protected function serializeRules() : string
 	{
-		return $this->toArray();
+		return json_encode($this->target->getRules());
+	}
+	
+	protected function serializeMessages() : string
+	{
+		return json_encode($this->target->getMessages());
 	}
 }

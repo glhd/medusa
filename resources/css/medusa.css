@@ -2,6 +2,9 @@
 @import "tailwindcss/preflight";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+@import 'froala-editor/css/froala_style.min.css';
+@import 'froala-editor/css/froala_editor.pkgd.min.css';
+@import 'codemirror/lib/codemirror.css';
 
 [data-reach-menu-item][data-selected] {
 	@apply .bg-blue .text-white;

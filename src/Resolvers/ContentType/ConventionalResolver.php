@@ -1,6 +1,6 @@
 <?php
 
-namespace Galahad\Medusa\Resolvers;
+namespace Galahad\Medusa\Resolvers\ContentType;
 
 use Galahad\Medusa\Collections\ContentTypeCollection;
 use Galahad\Medusa\Contracts\ContentType;

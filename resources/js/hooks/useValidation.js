@@ -1,38 +1,30 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import useDebounce from './useDebounce';
 import Validator from 'validatorjs';
 
-export default function useValidation(data, rules, touched = {}, server_errors = {}) {
+export default function useValidation(data, fields) {
 	const [errors, setErrors] = useState({});
-	const cycle = useRef(0);
-	const debounce = useRef(null);
 	
-	// FIXME: Server errors may have duplicates, and aren't showing because of changed/touched checks
-	// FIXME: I've just removed them for now
+	const rules = useMemo(() => {
+		const rules = {};
+		
+		Object.values(fields).forEach(field => {
+			const field_rules = ('string' === typeof field.rules || field.rules instanceof String)
+				? JSON.parse(field.rules)
+				: field.rules;
+			Object.entries(field_rules).forEach(([ key, value ]) => {
+				rules[key] = value;
+			});
+		});
+		
+		return rules;
+	}, [fields]);
 	
-	useEffect(() => {
-		clearTimeout(debounce.current);
-		debounce.current = setTimeout(() => {
-			const current_cycle = cycle.current + 1;
-			cycle.current = current_cycle;
-			
-			const validator = new Validator(data, rules);
-			
-			const handler = () => {
-				if (cycle.current === current_cycle) {
-					const errors = validator.errors.all();
-					Object.entries(server_errors).forEach(([key, value]) => {
-						if (!touched[key]) {
-							errors[key] = errors[key] || [];
-							errors[key].push(value);
-						}
-					});
-					setErrors(errors);
-				}
-			};
-			
-			validator.checkAsync(handler, handler);
-		}, 0 === cycle.current ? 1 : 250);
-	}, [data, rules, touched, server_errors]);
+	useDebounce(({ isStale }) => {
+		const validator = new Validator(data, rules);
+		const handler = () => isStale() ? null : setErrors(validator.errors.all());
+		validator.checkAsync(handler, handler);
+	}, [data, fields], 250);
 	
 	return errors;
 };

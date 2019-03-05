@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
+import useEditorContext from '../hooks/useEditorContext';
 
-export default function useReferencedField(all_data, config, config_key, fallback) {
+export default function useReferencedField(name, fallback = null) {
+	const { data } = useEditorContext();
 	return useMemo(() => {
-		const name = config_key in config
-			? config[config_key]
+		return name in data
+			? data[name]
 			: fallback;
-		return name in all_data
-			? all_data[name]
-			: null;
-	}, [all_data, config, fallback]);
+	}, [data, name, fallback]);
 };

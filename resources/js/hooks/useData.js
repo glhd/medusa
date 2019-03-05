@@ -1,16 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
-export default (fields, initial) => {
+export default function useData(fields, initial) {
 	const [data, setData] = useState(initial);
+	
 	const [touched, setTouched] = useState(() => {
 		const touched = {};
 		
 		Object.keys(initial).forEach(key => {
-			touched[key] = (
-				key in initial
-				&& key in fields
-				&& initial[key] !== fields[key].initial_value
-			);
+			touched[key] = false;
 		});
 		
 		return touched;
@@ -26,19 +23,5 @@ export default (fields, initial) => {
 		return changed;
 	}, [data, initial]);
 	
-	const onChange = (name) => (value) => {
-		setData({
-			...data,
-			[name]: value,
-		});
-		
-		if (!touched[name]) {
-			setTouched({
-				...touched,
-				[name]: true,
-			});
-		}
-	};
-	
-	return [data, changed, touched, onChange];
+	return { data, changed, touched, setData, setTouched };
 };

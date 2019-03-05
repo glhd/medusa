@@ -21,12 +21,12 @@ class MedusaDefaultContentSchema extends Migration
 			$table->string('description');
 			$table->text('data');
 			
-			$table->string('unique_key');
+			$table->string('unique_key')->nullable();
 			
 			$table->timestamp('published_at')->index()->nullable();
 			$table->timestamps();
+			$table->softDeletes();
 			
-			// FIXME: $table->unique(['content_type', 'unique_key']);
 			$table->unique(['content_type', 'slug']);
 		});
 		
