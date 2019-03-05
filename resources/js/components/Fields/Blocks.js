@@ -82,9 +82,13 @@ export default function Blocks(props) {
 	return (
 		<BlocksContext.Provider value={ context }>
 			<Group { ...props }>
-				<div className="border rounded p-2">
+				<div className="border shadow rounded p-3">
 					<Toolbar fields={ fields } />
-					<BlockFields onDragEnd={ onDragEnd } />
+					{ blocks.length ? <BlockFields onDragEnd={ onDragEnd } /> : (
+						<div className="text-grey text-sm italic -mt-1">
+							Add a block using one of the buttons above…
+						</div>
+					)}
 				</div>
 			</Group>
 		</BlocksContext.Provider>

@@ -32,6 +32,7 @@ class FrontendController extends Controller
 		$path = '/'.trim(config('medusa.path', 'medusa'), '/');
 		
 		$config = json_encode([
+			'name' => config('medusa.name', 'Medusa'),
 			'basepath' => "{$path}/web",
 			'graphql_endpoint' => url("{$path}/graphql"),
 			'csrf_token' => session()->token(),

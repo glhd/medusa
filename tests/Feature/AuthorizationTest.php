@@ -6,7 +6,6 @@ use Galahad\Medusa\Models\Content;
 use Galahad\Medusa\Tests\DatabaseTestCase;
 use Galahad\Medusa\Tests\Support\Models\User;
 use Illuminate\Foundation\Testing\TestResponse;
-use Illuminate\Support\Facades\Gate;
 
 class AuthorizationTest extends DatabaseTestCase
 {
@@ -27,13 +26,7 @@ class AuthorizationTest extends DatabaseTestCase
 		$this->admin = factory(User::class)->create();
 		$this->non_admin = factory(User::class)->create();
 		
-		$permissions = ['viewMedusa', 'view', 'create', 'update', 'delete'];
-		
-		foreach ($permissions as $permission) {
-			Gate::define($permission, function(User $user) {
-				return $user->is($this->admin);
-			});
-		}
+		$this->app['config']->set('medusa.admin_ids', [$this->admin->id]);
 	}
 	
 	public function test_view_medusa_ability() : void

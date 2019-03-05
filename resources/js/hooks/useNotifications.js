@@ -26,7 +26,7 @@ export default function useNotifications() {
 		const created_at = moment();
 		const { dangerous = false, successful = false, timeout = 5000 } = config;
 		
-		setNotifications([...notifications, { id, message, dangerous, timeout, created_at }]);
+		setNotifications([...notifications, { id, message, dangerous, successful, timeout, created_at }]);
 		
 		const cleanup = () => {
 			const index = notifications.findIndex(notification => notification.id === id);

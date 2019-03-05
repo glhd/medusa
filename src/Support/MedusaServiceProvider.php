@@ -5,12 +5,14 @@ namespace Galahad\Medusa\Support;
 use Galahad\Medusa\Contracts\Content;
 use Galahad\Medusa\Contracts\ContentResolver;
 use Galahad\Medusa\Contracts\ContentTypeResolver;
+use Galahad\Medusa\Events\ServingMedusa;
 use Galahad\Medusa\Exceptions\ConfigurationException;
 use Galahad\Medusa\Http\Controllers\ApiController;
 use Galahad\Medusa\Http\Controllers\FrontendController;
 use Galahad\Medusa\Medusa;
 use Galahad\Medusa\Resolvers\Content\EloquentResolver;
 use Galahad\Medusa\Resolvers\ContentType\ConventionalResolver;
+use Galahad\Medusa\Support\Policies\ConfigPolicy;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -18,6 +20,7 @@ use Illuminate\Contracts\Routing\Registrar;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
 
@@ -28,7 +31,7 @@ class MedusaServiceProvider extends ServiceProvider
 		require_once rtrim(__DIR__, DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.'helpers.php';
 		
 		$this->bootConfig()
-			->bootPermissions($this->app->make(Gate::class))
+			->bootPermissions($this->app->make(Gate::class), $this->app->make(Dispatcher::class))
 			->bootRoutes($this->app->make(Registrar::class))
 			->bootBlade($this->app->make(BladeCompiler::class))
 			->bootViews()
@@ -80,14 +83,20 @@ class MedusaServiceProvider extends ServiceProvider
 	 *
 	 * @param \Illuminate\Contracts\Auth\Access\Gate $gate
 	 */
-	protected function bootPermissions(Gate $gate) : self
+	protected function bootPermissions(Gate $gate, Dispatcher $dispatcher) : self
 	{
 		$gate->define('_viewMedusa', function() use ($gate) {
 			if ($gate->has('viewMedusa')) {
 				return $gate->authorize('viewMedusa');
 			}
 			
-			return $this->app->isLocal();
+			return $this->app->isLocal() || in_array(Auth::id(), config('medusa.admin_ids', []));
+		});
+		
+		$dispatcher->listen(ServingMedusa::class, function() use ($gate) {
+			if (null === $gate->getPolicyFor(Content::class)) {
+				$gate->policy(Content::class, ConfigPolicy::class);
+			}
 		});
 		
 		return $this;

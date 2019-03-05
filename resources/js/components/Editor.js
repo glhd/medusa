@@ -21,14 +21,19 @@ export default function Editor(props) {
 	
 	return (
 		<EditorContext.Provider value={ context }>
-			<Fields fields={ fields } />
-			<button
-				disabled={ disable_save }
-				onClick={ (e) => onSave(data) }
-				className={`${disable_save ? 'bg-grey-lighter border-grey-light text-grey-darker cursor-not-allowed' : 'bg-blue border-blue-dark text-white hover:bg-blue-dark hover:shadow cursor-pointer'} px-6 py-3 rounded`}
-			>
-				{ saving ? 'Saving…' : save_label }
-			</button>
+			<div className="bg-white border rounded-lg p-6">
+				<Fields fields={ fields } />
+				<div className="pt-6">
+					<button
+						disabled={ disable_save }
+						onClick={ (e) => onSave(data) }
+						className={ `${ disable_save ? 'bg-grey-lighter border-grey-light text-grey-darker cursor-not-allowed'
+							: 'bg-blue border-blue-dark text-white hover:bg-blue-dark hover:shadow cursor-pointer' } px-6 py-3 rounded` }
+					>
+						{ saving ? 'Saving…' : save_label }
+					</button>
+				</div>
+			</div>
 		</EditorContext.Provider>
 	);
 };

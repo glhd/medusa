@@ -5,7 +5,7 @@ export default function Toolbar({ fields }) {
 	const { onAdd } = useBlockContext();
 	
 	return (
-		<div className="-mx-2">
+		<div className="-mx-2 mb-4">
 			{ fields.map(({ Field, props }) => (
 				<button
 					key={ props.field.name }

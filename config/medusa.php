@@ -3,6 +3,17 @@
 return [
 	/*
 	|--------------------------------------------------------------------------
+	| Medusa Name
+	|--------------------------------------------------------------------------
+	|
+	| This is the root path to serve Medusa from.
+	|
+	*/
+	
+	'name' => env('MEDUSA_NAME', 'Medusa'),
+	
+	/*
+	|--------------------------------------------------------------------------
 	| Medusa Path
 	|--------------------------------------------------------------------------
 	|
@@ -44,10 +55,23 @@ return [
 	| Here you may specify the model that represents Medusa content in your app.
 	| This model must implement the Galahad\Medusa\Contracts\Content interface
 	| If you are using the default Content model, you can also override the
-	| tables that content are stored in.
+	| tables that content is stored in.
 	|
 	*/
 	
 	'content_model' => 'Galahad\\Medusa\\Models\\Content',
 	'content_table' => 'medusa_content',
+	
+	/*
+	|--------------------------------------------------------------------------
+	| Authorization
+	|--------------------------------------------------------------------------
+	|
+	| Typically, you will want to register a Policy for access to medusa content.
+	| But, to get things started quickly, you can add a list of users that should
+	| have full admin access here.
+	|
+	*/
+	
+	'admin_ids' => [],
 ];

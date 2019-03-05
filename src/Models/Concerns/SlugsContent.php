@@ -4,7 +4,6 @@ namespace Galahad\Medusa\Models\Concerns;
 
 use Galahad\Medusa\Contracts\Content;
 use Illuminate\Support\Str;
-use phpDocumentor\Reflection\DocBlock\Tags\Reference\Url;
 
 trait SlugsContent
 {
@@ -12,6 +11,8 @@ trait SlugsContent
 	{
 		static::saving(function(Content $content) {
 			if (empty($content->getSlug())) {
+				// FIXME: We need a way to indicate that the slug should always be updated
+				// TODO: Maybe fire a SluggedContent event so that a redirect can be set up if necessary
 				$slug_source = $content->getContentType()->generateSlugFromData($content->getData());
 				$slug = $content->addSlugSuffix(Str::slug($slug_source));
 				$content->setSlug($slug);

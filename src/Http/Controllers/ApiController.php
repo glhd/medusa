@@ -127,7 +127,7 @@ class ApiController extends Controller
 		$content_type = medusa()->resolveContentType($args['content_type_id']);
 		$data = json_decode($args['data'], true);
 		
-		if (!Gate::allows('create', $content_type)) {
+		if (!Gate::allows('create', [Content::class, $content_type])) {
 			throw new UserError('Unauthorized', 401);
 		}
 		
