@@ -5,7 +5,7 @@ export default function Loading({ message = 'Loading…' }) {
 	const timeout = useRef();
 	useEffect(() => {
 		clearTimeout(timeout.current);
-		timeout.current = setTimeout(() => setVisible(truee), 500);
+		timeout.current = setTimeout(() => setVisible(true), 500);
 		return () => clearTimeout(timeout.current);
 	}, []);
 	

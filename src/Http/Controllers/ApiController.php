@@ -13,12 +13,14 @@ use Galahad\Medusa\Http\Middleware\DispatchMedusaEvent;
 use Galahad\Medusa\Serializers\ContentSerializer;
 use Galahad\Medusa\Serializers\ContentTypeSerializer;
 use Galahad\Medusa\Validation\ContentValidator;
+use GraphQL\Error\UserError;
 use GraphQL\Server\StandardServer;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Utils\BuildSchema;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -67,6 +69,10 @@ class ApiController extends Controller
 	
 	protected function resolveAllContent($source, $args, $context, ResolveInfo $info)
 	{
+		if (!Gate::allows('view', config('medusa.content_model', Content::class))) {
+			throw new UserError('Unauthorized', 401);
+		}
+		
 		$page = $args['page'] ?? 1;
 		$paginator = app(ContentResolver::class)->paginate(20, $page);
 		$selection = $info->getFieldSelection(2);
@@ -88,6 +94,10 @@ class ApiController extends Controller
 	{
 		$selection = $info->getFieldSelection(2);
 		$content = app(ContentResolver::class)->resolve($args['id']);
+		
+		if (!Gate::allows('view', $content)) {
+			throw new UserError('Unauthorized', 401);
+		}
 		
 		return (new ContentSerializer($content))->setKeys($selection)->toArray();
 	}
@@ -117,6 +127,10 @@ class ApiController extends Controller
 		$content_type = medusa()->resolveContentType($args['content_type_id']);
 		$data = json_decode($args['data'], true);
 		
+		if (!Gate::allows('create', $content_type)) {
+			throw new UserError('Unauthorized', 401);
+		}
+		
 		$validator = new ContentValidator(app(Translator::class), $data, $content_type);
 		
 		if ($validator->fails()) {
@@ -137,6 +151,10 @@ class ApiController extends Controller
 	{
 		$content = app(ContentResolver::class)->resolve($args['id']);
 		$data = json_decode($args['data'], true);
+		
+		if (!Gate::allows('update', $content)) {
+			throw new UserError('Unauthorized', 401);
+		}
 		
 		$validator = new ContentValidator(app(Translator::class), $data, $content->getContentType());
 		

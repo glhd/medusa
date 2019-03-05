@@ -117,10 +117,12 @@ class MedusaServiceProvider extends ServiceProvider
 		$registrar
 			->get("{$path}/web/{any?}", FrontendController::class)
 			->middleware($this->config('middleware'))
+			->name('medusa.frontend')
 			->where('any', '.*');
 		
 		$registrar
 			->any("{$path}/graphql", ApiController::class)
+			->name('medusa.graphql')
 			->middleware($this->config('middleware'));
 		
 		return $this;
