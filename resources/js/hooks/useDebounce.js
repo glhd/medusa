@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-export default function useDebounce(callback, timeout = 250) {
+export default function useDebounce(callback, inputs = [], timeout = 250) {
 	const debounce = useRef(null);
 	const cycle = useRef(0);
 	
@@ -13,7 +13,7 @@ export default function useDebounce(callback, timeout = 250) {
 		clearTimeout(debounce.current);
 		debounce.current = setTimeout(() => callback({ isStale }), timeout);
 		return () => clearTimeout(debounce.current);
-	}, [callback, timeout]);
+	}, inputs);
 	
 	return current_cycle;
 };

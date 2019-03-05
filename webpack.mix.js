@@ -3,8 +3,8 @@ const ExtractPlugin = require("mini-css-extract-plugin");
 
 LaravelMix
 	.disableSuccessNotifications()
-	.setPublicPath('./resources/js/dist')
-	.react('resources/js/medusa.js', 'resources/js/dist/')
+	.setPublicPath('./resources/public')
+	.react('resources/js/medusa.js', 'resources/public/medusa.js')
 	.autoload({
 		jquery: ['$', 'window.jQuery']
 	})
@@ -14,12 +14,7 @@ LaravelMix
 		
 		if ('production' === process.env.NODE_ENV) {
 			plugins.push(new ExtractPlugin());
-			loaders.push({
-				loader: ExtractPlugin.loader,
-				options: {
-					publicPath: './resources/css/dist/'
-				}
-			});
+			loaders.push(ExtractPlugin.loader);
 		}
 		
 		loaders.push({

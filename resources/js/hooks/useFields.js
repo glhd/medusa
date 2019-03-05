@@ -28,6 +28,7 @@ function mapFieldProps(field, medusa) {
 	return {
 		field: {
 			...field,
+			rules: JSON.parse(field.rules),
 			config: JSON.parse(field.config),
 			initial_value: JSON.parse(field.initial_value),
 		},

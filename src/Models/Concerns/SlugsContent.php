@@ -4,6 +4,7 @@ namespace Galahad\Medusa\Models\Concerns;
 
 use Galahad\Medusa\Contracts\Content;
 use Illuminate\Support\Str;
+use phpDocumentor\Reflection\DocBlock\Tags\Reference\Url;
 
 trait SlugsContent
 {
@@ -11,9 +12,8 @@ trait SlugsContent
 	{
 		static::saving(function(Content $content) {
 			if (empty($content->getSlug())) {
-				// FIXME: Ensure unique
 				$slug_source = $content->getContentType()->generateSlugFromData($content->getData());
-				$slug = Str::slug($slug_source);
+				$slug = $content->addSlugSuffix(Str::slug($slug_source));
 				$content->setSlug($slug);
 			}
 		});
@@ -29,5 +29,25 @@ trait SlugsContent
 		$this->setAttribute('slug', $slug);
 		
 		return $this;
+	}
+	
+	protected function addSlugSuffix(string $slug) : string
+	{
+		$suffix = 0;
+		$new_slug = $slug;
+		
+		do {
+			$exists = static::where('slug', '=', $new_slug)
+				->where($this->getKeyName(), '<>', $this->getKey() ?? 0)
+				->withoutGlobalScopes()
+				->exists();
+			
+			if ($exists) {
+				$suffix++;
+				$new_slug = "{$slug}-{$suffix}";
+			}
+		} while ($exists);
+		
+		return $new_slug;
 	}
 }

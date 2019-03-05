@@ -1,25 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import useDebounce from './useDebounce';
 import Validator from 'validatorjs';
 
-export default function useValidation(data, rules_json, touched = {}) {
+export default function useValidation(data, fields) {
 	const [errors, setErrors] = useState({});
 	
-	const rules = JSON.parse(rules_json);
+	const rules = useMemo(() => {
+		const rules = {};
+		
+		Object.values(fields).forEach(field => {
+			const field_rules = ('string' === typeof field.rules || field.rules instanceof String)
+				? JSON.parse(field.rules)
+				: field.rules;
+			Object.entries(field_rules).forEach(([ key, value ]) => {
+				rules[key] = value;
+			});
+		});
+		
+		return rules;
+	}, [fields]);
 	
 	useDebounce(({ isStale }) => {
 		const validator = new Validator(data, rules);
-		
-		const handler = () => {
-			if (isStale()) {
-				return;
-			}
-			
-			setErrors(validator.errors.all());
-		};
-		
+		const handler = () => isStale() ? null : setErrors(validator.errors.all());
 		validator.checkAsync(handler, handler);
-	}, 250);
+	}, [data, fields], 250);
 	
 	return errors;
 };

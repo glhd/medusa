@@ -5,6 +5,5 @@ npm-debug.log
 .idea/
 _ide_helper.php
 .phpstorm.meta.php
-resources/js/dist/hot
-resources/js/dist/medusa.css
-mix-manifest.json
+resources/**/hot
+resources/**/mix-manifest.json

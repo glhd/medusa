@@ -13,4 +13,4 @@ if ('development' === process.env.NODE_ENV) {
 	console.log(window.__MEDUSA__);
 }
 
-ReactDOM.render(<HotApp {...window.__MEDUSA__} />, root);
+ReactDOM.render(<HotApp context={window.__MEDUSA__} />, root);

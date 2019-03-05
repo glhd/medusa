@@ -4,7 +4,7 @@ BASEDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$BASEDIR"
 
 function cleanup {
-  rm resources/js/dist/hot
+  rm resources/public/hot
 }
 trap cleanup EXIT
 

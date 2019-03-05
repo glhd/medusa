@@ -11,7 +11,6 @@ use Galahad\Medusa\Http\Controllers\FrontendController;
 use Galahad\Medusa\Medusa;
 use Galahad\Medusa\Resolvers\Content\EloquentResolver;
 use Galahad\Medusa\Resolvers\ContentType\ConventionalResolver;
-use Galahad\Medusa\View\MedusaView;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -33,7 +32,8 @@ class MedusaServiceProvider extends ServiceProvider
 			->bootRoutes($this->app->make(Registrar::class))
 			->bootBlade($this->app->make(BladeCompiler::class))
 			->bootViews()
-			->bootMigrations();
+			->bootMigrations()
+			->bootPublic();
 	}
 	
 	/**
@@ -120,8 +120,8 @@ class MedusaServiceProvider extends ServiceProvider
 			->where('any', '.*');
 		
 		$registrar
-			->any("{$path}/graphql", ApiController::class);
-			//->middleware($this->config('middleware')); // FIXME
+			->any("{$path}/graphql", ApiController::class)
+			->middleware($this->config('middleware'));
 		
 		return $this;
 	}
@@ -159,6 +159,17 @@ class MedusaServiceProvider extends ServiceProvider
 			$this->publishes([
 				$this->basePath('migrations/') => $this->app->databasePath('migrations')
 			], 'medusa-migrations');
+		}
+		
+		return $this;
+	}
+	
+	protected function bootPublic() : self
+	{
+		if (method_exists($this->app, 'publicPath')) {
+			$this->publishes([
+				$this->basePath('resources/public') => $this->app->publicPath('vendor/medusa')
+			], 'medusa-public');
 		}
 		
 		return $this;

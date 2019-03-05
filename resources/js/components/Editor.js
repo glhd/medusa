@@ -6,11 +6,11 @@ import useValidation from "../hooks/useValidation";
 
 export default function Editor(props) {
 	const { id, existing, content_type, onSave, saving } = props;
-	const { fields, rules, messages } = content_type;
+	const { fields } = content_type;
 	const initial_data = initialData(fields, existing);
 	const { data, changed, touched, setData, setTouched } = useData(fields, initial_data);
 	const [dependencies, setDependencies] = useState({});
-	const errors = useValidation(data, rules, touched);
+	const errors = useValidation(data, fields);
 	
 	const context = { data, changed, touched, errors, dependencies, setDependencies, setData, setTouched };
 	

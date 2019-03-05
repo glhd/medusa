@@ -16,9 +16,9 @@ export const CREATE_CONTENT = gql`
                     label
                     config
                     initial_value
+                    rules
+                    messages
                 }
-                rules
-                messages
             }
             data
         }
@@ -41,9 +41,9 @@ export const UPDATE_CONTENT = gql`
                     label
                     config
                     initial_value
+                    rules
+                    messages
                 }
-                rules
-                messages
             }
             data
         }

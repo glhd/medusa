@@ -7,15 +7,19 @@ export default function useNotifications() {
 	const interval = useRef();
 	useEffect(() => {
 		clearInterval(interval.current);
-		
+
 		interval.current = setInterval(() => {
+			if (!notifications.length) {
+				return;
+			}
+			
 			setNotifications(notifications.filter(notification => {
 				return moment().diff(notification.created_at) < notification.timeout;
 			}));
 		}, 500);
-		
+
 		return () => clearInterval(interval.current);
-	});
+	}, []);
 	
 	const addNotification = (message, config = {}) => {
 		const id = Symbol(message);

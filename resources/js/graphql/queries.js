@@ -13,9 +13,9 @@ export const ALL_CONTENT_TYPES = gql`
                 label
                 config
                 initial_value
+                rules
+                messages
             }
-            rules
-            messages
         }
     }
 `;
@@ -32,9 +32,9 @@ export const GET_CONTENT_TYPE = gql`
                 label
                 config
                 initial_value
+                rules
+                messages
             }
-            rules
-            messages
         }
     }
 `;
@@ -73,9 +73,9 @@ export const GET_CONTENT = gql`
                     label
                     config
                     initial_value
+                    rules
+                    messages
                 }
-                rules
-                messages
             }
             data
         }

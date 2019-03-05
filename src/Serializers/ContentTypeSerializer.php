@@ -4,7 +4,6 @@ namespace Galahad\Medusa\Serializers;
 
 use Galahad\Medusa\Contracts\ContentType;
 use Galahad\Medusa\Contracts\Field;
-use Illuminate\Contracts\Support\Arrayable;
 
 class ContentTypeSerializer extends Serializer
 {

@@ -2,10 +2,8 @@
 
 namespace Galahad\Medusa\Http\Controllers;
 
-use Galahad\Medusa\Contracts\ContentType;
 use Galahad\Medusa\Http\Middleware\Authorize;
 use Galahad\Medusa\Http\Middleware\DispatchMedusaEvent;
-use Galahad\Medusa\Serializers\ContentTypeSerializer;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\HtmlString;
@@ -25,6 +23,7 @@ class FrontendController extends Controller
 		return view('medusa::frontend', [
 			'config' => $this->config(),
 			'script' => $this->script(),
+			'styles' => $this->styles(),
 		]);
 	}
 	
@@ -35,6 +34,7 @@ class FrontendController extends Controller
 		$config = json_encode([
 			'basepath' => "{$path}/web",
 			'graphql_endpoint' => url("{$path}/graphql"),
+			'csrf_token' => session()->token(),
 		]);
 		
 		return new HtmlString("<script>window.__MEDUSA__ = {$config}</script>");
@@ -42,14 +42,32 @@ class FrontendController extends Controller
 	
 	protected function script() : HtmlString
 	{
-		$hot = medusa()->basePath('resources/js/dist/hot');
-		
-		if (file_exists($hot) && app()->isLocal()) {
-			$hmr_path = trim(file_get_contents($hot));
+		if ($hmr_path = $this->hmr()) {
 			return new HtmlString("<script crossorigin src=\"{$hmr_path}medusa.js\"></script>");
 		}
 		
-		$script = file_get_contents(medusa()->basePath('resources/js/dist/medusa.js'));
+		$script = file_get_contents(medusa()->basePath('resources/public/medusa.js'));
 		return new HtmlString("<script>{$script}</script>");
+	}
+	
+	protected function styles() : HtmlString
+	{
+		if ($this->hmr()) {
+			return new HtmlString('');
+		}
+		
+		$style = file_get_contents(medusa()->basePath('resources/public/medusa.css'));
+		return new HtmlString("<style>{$style}</style>");
+	}
+	
+	protected function hmr() : ?string
+	{
+		$hot = medusa()->basePath('resources/public/hot');
+		
+		if (file_exists($hot) && app()->isLocal()) {
+			return trim(file_get_contents($hot));
+		}
+		
+		return false;
 	}
 }

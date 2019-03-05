@@ -2,22 +2,20 @@
 
 namespace Galahad\Medusa\Http\Controllers;
 
-// use Galahad\Medusa\Http\Middleware\Authorize;
 use ArrayAccess;
 use Galahad\Medusa\Contracts\Content;
 use Galahad\Medusa\Contracts\ContentResolver;
 use Galahad\Medusa\Contracts\ContentType;
 use Galahad\Medusa\Contracts\ContentTypeResolver;
 use Galahad\Medusa\Exceptions\ValidationException;
+use Galahad\Medusa\Http\Middleware\Authorize;
 use Galahad\Medusa\Http\Middleware\DispatchMedusaEvent;
 use Galahad\Medusa\Serializers\ContentSerializer;
 use Galahad\Medusa\Serializers\ContentTypeSerializer;
 use Galahad\Medusa\Validation\ContentValidator;
-use GraphQL\Server\RequestError;
 use GraphQL\Server\StandardServer;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Utils\BuildSchema;
-use GuzzleHttp\Exception\ClientException;
 use Illuminate\Contracts\Translation\Translator;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -30,7 +28,7 @@ class ApiController extends Controller
 	{
 		$this->middleware([
 			DispatchMedusaEvent::class,
-			// Authorize::class, // FIXME
+			Authorize::class,
 		]);
 	}
 	
