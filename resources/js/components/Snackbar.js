@@ -1,16 +1,17 @@
 import React from 'react';
 import useAppContext from '../hooks/useAppContext';
 
-export default function Snackbar({ message }) {
+export default function Snackbar() {
 	const { notifications } = useAppContext();
 	
 	return (
 		<div className="fixed pin-l pin-r pin-b p-8">
-			<div className="container mx-auto text-right">
+			<div className="container mx-auto flex flex-col md:justify-end md:items-end">
 				{ notifications.map(notification => {
 					const { message, dangerous, successful } = notification;
 					
-					let style = 'bg-grey text-white';
+					let style = 'bg-grey-darker text-white';
+					
 					if (successful) {
 						style = 'bg-green-dark text-white';
 					}
@@ -19,11 +20,11 @@ export default function Snackbar({ message }) {
 					}
 					
 					return (
-						<div className={`inline-block ${style} font-semibold py-3 px-6 rounded-full shadow-lg`}>
+						<div key={ message } className={ `${ style } font-semibold py-3 px-6 mt-1 rounded-full shadow-lg` }>
 							{ message }
 						</div>
 					);
-				})}
+				}) }
 			</div>
 		</div>
 	);

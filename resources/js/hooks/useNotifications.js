@@ -1,51 +1,30 @@
 import { useState, useRef, useEffect } from 'react';
-import moment from "moment";
 
 export default function useNotifications() {
 	const [notifications, setNotifications] = useState([]);
+	const handle = useRef();
 	
-	const interval = useRef();
 	useEffect(() => {
-		clearInterval(interval.current);
-
-		interval.current = setInterval(() => {
-			if (!notifications.length) {
-				return;
+		clearTimeout(handle.current);
+		handle.current = setInterval(() => {
+			const now = Date.now();
+			const filtered = notifications.filter(notification => notification.expiration > now);
+			if (filtered.length !== notifications.length) {
+				console.log('updating notifications');
+				setNotifications(filtered);
 			}
-			
-			setNotifications(notifications.filter(notification => {
-				return moment().diff(notification.created_at) < notification.timeout;
-			}));
 		}, 500);
 
-		return () => clearInterval(interval.current);
-	}, []);
+		return () => clearInterval(handle.current);
+	}, [notifications]);
 	
 	const addNotification = (message, config = {}) => {
 		const id = Symbol(message);
-		const created_at = moment();
 		const { dangerous = false, successful = false, timeout = 5000 } = config;
+		const expiration = Date.now() + timeout;
 		
-		setNotifications([...notifications, { id, message, dangerous, successful, timeout, created_at }]);
-		
-		const cleanup = () => {
-			const index = notifications.findIndex(notification => notification.id === id);
-			if (index > -1) {
-				setNotifications(reorder(notifications, index));
-			}
-		};
-		
-		return cleanup();
+		setNotifications([...notifications, { id, message, dangerous, successful, timeout, expiration }]);
 	};
 	
 	return [notifications, addNotification];
-};
-
-const reorder = (list, from, to = null) => {
-	const result = Array.from(list);
-	const [removed] = result.splice(from, 1);
-	if (null !== to) {
-		result.splice(to, 0, removed);
-	}
-	return result;
 };
