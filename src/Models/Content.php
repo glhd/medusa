@@ -4,7 +4,6 @@ namespace Galahad\Medusa\Models;
 
 use Galahad\Medusa\Contracts\Content as ContentContract;
 use Galahad\Medusa\Contracts\ContentType;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -59,16 +58,6 @@ class Content extends Model implements ContentContract
 		return $this;
 	}
 	
-	protected function setContentTypeAttribute($content_type)
-	{
-		if ($content_type instanceof ContentType) {
-			$this->content_type_instance = $content_type;
-			$content_type = $content_type->getId();
-		}
-		
-		$this->attributes['content_type'] = $content_type;
-	}
-	
 	public function getData() : array
 	{
 		return $this->getAttribute('data');
@@ -84,5 +73,15 @@ class Content extends Model implements ContentContract
 	public function save(array $options = []) : bool
 	{
 		return parent::save($options);
+	}
+	
+	protected function setContentTypeAttribute($content_type)
+	{
+		if ($content_type instanceof ContentType) {
+			$this->content_type_instance = $content_type;
+			$content_type = $content_type->getId();
+		}
+		
+		$this->attributes['content_type'] = $content_type;
 	}
 }

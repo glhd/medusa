@@ -9,7 +9,12 @@ trait DescribesContent
 	public static function bootDescribesContent()
 	{
 		static::saving(function(Content $content) {
-			$content->setDescription($content->getContentType()->generateDescriptionFromData($content->getData()));
+			$content->setDescription(
+				$content->getContentType()->generateDescriptionFromData(
+					$content->getData(),
+					$content->getDescription()
+				)
+			);
 		});
 	}
 	

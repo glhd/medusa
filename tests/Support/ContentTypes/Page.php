@@ -20,12 +20,12 @@ class Page extends ContentType
 		]);
 	}
 	
-	public function generateSlugFromData(array $data) : string
+	public function generateSlugFromData(array $data, string $existing = null) : string
 	{
 		return $data['slug'];
 	}
 	
-	public function generateDescriptionFromData(array $data) : string
+	public function generateDescriptionFromData(array $data, string $existing = null) : string
 	{
 		return $data['title'];
 	}

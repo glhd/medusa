@@ -4,7 +4,7 @@ namespace Galahad\Medusa\Contracts;
 
 use Galahad\Medusa\Collections\ContentTypeCollection;
 
-interface ContentTypeResolver
+interface ContentTypeRepository
 {
 	public function resolve($id) : ContentType;
 	

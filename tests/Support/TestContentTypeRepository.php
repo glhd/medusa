@@ -4,11 +4,11 @@ namespace Galahad\Medusa\Tests\Support;
 
 use Galahad\Medusa\Collections\ContentTypeCollection;
 use Galahad\Medusa\Contracts\ContentType;
-use Galahad\Medusa\Contracts\ContentTypeResolver;
+use Galahad\Medusa\Contracts\ContentTypeRepository;
 use Galahad\Medusa\Exceptions\ContentTypeNotFoundException;
 use Galahad\Medusa\Tests\Support\ContentTypes\Page;
 
-class TestContentTypeResolver implements ContentTypeResolver
+class TestContentTypeRepository implements ContentTypeRepository
 {
 	protected $map = [];
 	

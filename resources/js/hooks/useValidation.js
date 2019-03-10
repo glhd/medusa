@@ -2,6 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import useDebounce from './useDebounce';
 import Validator from 'validatorjs';
 
+Validator.registerMissedRuleValidator((inputValue, ruleValue, attribute, callback) => {}, '');
+
 export default function useValidation(data, fields) {
 	const [errors, setErrors] = useState({});
 	

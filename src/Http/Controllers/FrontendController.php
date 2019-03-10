@@ -2,6 +2,7 @@
 
 namespace Galahad\Medusa\Http\Controllers;
 
+use Galahad\Medusa\Http\Middleware\Authenticate;
 use Galahad\Medusa\Http\Middleware\Authorize;
 use Galahad\Medusa\Http\Middleware\DispatchMedusaEvent;
 use Illuminate\Http\Request;
@@ -12,10 +13,11 @@ class FrontendController extends Controller
 {
 	public function __construct()
 	{
-		$this->middleware([
-			DispatchMedusaEvent::class,
-			Authorize::class,
-		]);
+		$this->middleware(array_merge(
+			[DispatchMedusaEvent::class],
+			config('medusa.middleware', []),
+			[Authenticate::class, Authorize::class]
+		));
 	}
 	
 	public function __invoke(Request $request)
@@ -36,6 +38,7 @@ class FrontendController extends Controller
 			'basepath' => "{$path}/web",
 			'graphql_endpoint' => url("{$path}/graphql"),
 			'csrf_token' => session()->token(),
+			'env' => app()->environment(),
 		]);
 		
 		return new HtmlString("<script>window.__MEDUSA__ = {$config}</script>");

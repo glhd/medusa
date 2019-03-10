@@ -7,6 +7,13 @@ use Illuminate\Contracts\Auth\Authenticatable;
 
 class ConfigPolicy
 {
+	public function before() : ?bool
+	{
+		if (app()->isLocal()) {
+			return true;
+		}
+	}
+	
 	public function view(Authenticatable $user) : bool
 	{
 		return in_array($user->getAuthIdentifier(), config('medusa.admin_ids', []));

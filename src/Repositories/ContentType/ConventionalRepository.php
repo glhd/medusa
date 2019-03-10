@@ -1,10 +1,10 @@
 <?php
 
-namespace Galahad\Medusa\Resolvers\ContentType;
+namespace Galahad\Medusa\Repositories\ContentType;
 
 use Galahad\Medusa\Collections\ContentTypeCollection;
 use Galahad\Medusa\Contracts\ContentType;
-use Galahad\Medusa\Contracts\ContentTypeResolver;
+use Galahad\Medusa\Contracts\ContentTypeRepository;
 use Galahad\Medusa\Exceptions\ContentTypeNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Collection;
@@ -12,12 +12,17 @@ use Illuminate\Support\Str;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 
-class ConventionalResolver implements ContentTypeResolver
+class ConventionalRepository implements ContentTypeRepository
 {
 	/**
 	 * @var \Illuminate\Foundation\Application
 	 */
 	protected $app;
+	
+	/**
+	 * @var ContentType[]
+	 */
+	protected $resolved = [];
 	
 	public function __construct(Application $app)
 	{
@@ -31,18 +36,26 @@ class ConventionalResolver implements ContentTypeResolver
 	 */
 	public function resolve($name) : ContentType
 	{
-		$class_name = $this->normalizeClassName($name);
-		
-		if (!class_exists($class_name) || !is_subclass_of($class_name, ContentType::class)) {
-			throw (new ContentTypeNotFoundException("Cannot find Content Type '$name' (looked for '$class_name')"))
-				->setRequestedContentType($class_name);
+		if (!isset($this->resolved[$name])) {
+			$class_name = $this->normalizeClassName($name);
+			
+			if (!class_exists($class_name) || !is_subclass_of($class_name, ContentType::class)) {
+				throw (new ContentTypeNotFoundException("Cannot find Content Type '$name' (looked for '$class_name')"))
+					->setRequestedContentType($class_name);
+			}
+			
+			$this->resolved[$name] = $this->app->make($class_name);
 		}
 		
-		return $this->app->make($class_name);
+		return $this->resolved[$name];
 	}
 	
 	public function exists($name) : bool
 	{
+		if (isset($this->resolved[$name])) {
+			return true;
+		}
+		
 		$class_name = $this->normalizeClassName($name);
 		
 		return class_exists($class_name)

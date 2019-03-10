@@ -37,13 +37,13 @@ abstract class Serializer implements Arrayable
 				$key = $value;
 			}
 			
-			$result[$key] = $this->resolveKey($key);
+			$result[$key] = $this->serialize($key);
 		}
 		
 		return $result;
 	}
 	
-	protected function resolveKey($key)
+	protected function serialize($key)
 	{
 		$serialize_method = 'serialize'.Str::studly($key);
 		if (method_exists($this, $serialize_method)) {

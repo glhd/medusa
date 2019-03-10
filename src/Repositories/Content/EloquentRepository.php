@@ -1,17 +1,14 @@
 <?php
 
-namespace Galahad\Medusa\Resolvers\Content;
+namespace Galahad\Medusa\Repositories\Content;
 
 use Galahad\Medusa\Contracts\Content as ContentContract;
-use Galahad\Medusa\Contracts\ContentResolver;
-use Galahad\Medusa\Contracts\ContentType;
+use Galahad\Medusa\Contracts\ContentRepository;
 use Galahad\Medusa\Models\Content;
-use Galahad\Medusa\Validation\ContentValidator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Illuminate\Contracts\Translation\Translator;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Collection;
 
-class EloquentResolver implements ContentResolver
+class EloquentRepository implements ContentRepository
 {
 	/**
 	 * @var \Galahad\Medusa\Models\Content
@@ -26,6 +23,13 @@ class EloquentResolver implements ContentResolver
 	public function resolve($id) : ContentContract
 	{
 		return $this->model->newQuery()->findOrFail($id);
+	}
+	
+	public function resolveMany(array $ids) : Collection
+	{
+		return $this->model->newQuery()
+			->whereIn('id', $ids)
+			->get();
 	}
 	
 	public function exists($id) : bool

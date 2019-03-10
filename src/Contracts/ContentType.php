@@ -39,15 +39,17 @@ interface ContentType extends UrlRoutable
 	 * Generate a unique slug based on the content
 	 *
 	 * @param array $data
+	 * @param string|null $existing
 	 * @return string
 	 */
-	public function generateSlugFromData(array $data) : string;
+	public function generateSlugFromData(array $data, string $existing = null) : string;
 	
 	/**
 	 * Generate a description based on the content
 	 *
 	 * @param array $data
+	 * @param string|null $existing
 	 * @return string
 	 */
-	public function generateDescriptionFromData(array $data) : string;
+	public function generateDescriptionFromData(array $data, string $existing = null) : string;
 }

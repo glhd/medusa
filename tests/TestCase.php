@@ -4,7 +4,7 @@ namespace Galahad\Medusa\Tests;
 
 use Galahad\Medusa\Support\Facades\Medusa;
 use Galahad\Medusa\Support\MedusaServiceProvider;
-use Galahad\Medusa\Tests\Support\TestContentTypeResolver;
+use Galahad\Medusa\Tests\Support\TestContentTypeRepository;
 use Illuminate\Foundation\Testing\TestResponse;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -14,7 +14,7 @@ abstract class TestCase extends Orchestra
 	{
 		parent::setUp();
 		
-		$this->app->instance('glhd.medusa.resolvers.content_type', new TestContentTypeResolver());
+		$this->app->instance('glhd.medusa.resolvers.content_type', new TestContentTypeRepository());
 	}
 	
 	protected function getPackageProviders($app) : array

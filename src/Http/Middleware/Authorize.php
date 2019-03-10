@@ -19,7 +19,9 @@ class Authorize
 	
 	public function handle(Request $request, callable $next)
 	{
-		$this->gate->authorize('_viewMedusa');
+		if (!app()->isLocal()) {
+			$this->gate->authorize('_viewMedusa');
+		}
 		
 		return $next($request);
 	}

@@ -4,16 +4,16 @@ namespace Galahad\Medusa\Concerns;
 
 use Galahad\Medusa\Collections\ContentTypeCollection;
 use Galahad\Medusa\Contracts\ContentType;
-use Galahad\Medusa\Contracts\ContentTypeResolver;
+use Galahad\Medusa\Contracts\ContentTypeRepository;
 
 trait ResolvesContentTypes
 {
 	/**
-	 * @var \Galahad\Medusa\Contracts\ContentTypeResolver
+	 * @var \Galahad\Medusa\Contracts\ContentTypeRepository
 	 */
 	protected $content_type_resolver;
 	
-	public function setContentTypeResolver(ContentTypeResolver $resolver) : self
+	public function setContentTypeResolver(ContentTypeRepository $resolver) : self
 	{
 		$this->content_type_resolver = $resolver;
 		

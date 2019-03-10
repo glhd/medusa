@@ -3,6 +3,12 @@ schema {
     mutation: Mutation
 }
 
+interface MutationResponse {
+    code: Int!
+    success: Boolean!
+    message: String!
+}
+
 type ContentType {
     id: ID!
     title: String!
@@ -46,8 +52,23 @@ type Query {
     allContent(page: Int): PaginatedContent!
 }
 
+type CreateContentResponse implements MutationResponse {
+    code: Int!
+    success: Boolean!
+    message: String!
+    validation: [String]
+    content: Content
+}
+
+type UpdateContentResponse implements MutationResponse {
+    code: Int!
+    success: Boolean!
+    message: String!
+    content: Content
+}
+
 type Mutation {
-    createContent(content_type_id: ID!, data: String!): Content
-    updateContent(id: ID!, data: String!): Content
+    createContent(content_type_id: ID!, data: String!): CreateContentResponse!
+    updateContent(id: ID!, data: String!): UpdateContentResponse!
 }
 

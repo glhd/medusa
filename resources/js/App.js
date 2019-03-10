@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { ApolloClient, HttpLink, InMemoryCache } from 'apollo-boost';
+import { ApolloClient, InMemoryCache } from 'apollo-boost';
+import { BatchHttpLink } from 'apollo-link-batch-http';
 import { ApolloProvider } from 'react-apollo';
 import Layout from './components/Layout';
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -8,6 +9,7 @@ import { AppContext } from "./hooks/useAppContext";
 import Home from "./views/Home";
 import UpdateContent from "./views/UpdateContent";
 import CreateContent from "./views/CreateContent";
+import Tinker from "./views/Tinker";
 import useNotifications from "./hooks/useNotifications";
 
 export default function App({ context }) {
@@ -27,6 +29,7 @@ export default function App({ context }) {
 							<Home path="/page/:page" />
 							<UpdateContent path="/content/:id" />
 							<CreateContent path="/new/:content_type_id" />
+							<Tinker path="/tinker" />
 						</Router>
 					</Layout>
 				</ErrorBoundary>
@@ -38,7 +41,7 @@ export default function App({ context }) {
 function useApolloClient({ graphql_endpoint, csrf_token }) {
 	return useMemo(() => {
 		return new ApolloClient({
-			link: new HttpLink({
+			link: new BatchHttpLink({
 				uri: graphql_endpoint,
 				headers: {
 					'x-csrf-token': csrf_token,

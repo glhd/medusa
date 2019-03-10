@@ -10,30 +10,33 @@ import useAppContext from '../hooks/useAppContext';
 import { ALL_CONTENT_TYPES } from '../graphql/queries'; // TODO: We really only need name and ID here
 
 export default function Layout({ children }) {
-	const { basepath, name } = useAppContext();
-	
-	const render = ({ data, loading }) => (
-		<div className="font-sans antialias bg-grey-lightest min-h-screen">
-			<div className="bg-white border-b p-3">
-				<div className="container mx-auto flex items-baseline">
-					<h1 className="text-lg font-medium mr-4">
-						<Link to={ basepath } className="no-underline text-grey-dark hover:underline">
-							{ name }
-						</Link>
-					</h1>
-					{ !loading && <ContentMenu basepath={basepath} content_types={data.allContentTypes} /> }
-				</div>
-			</div>
-			<div className="container mx-auto py-8">
-				{ children }
-			</div>
-			<Snackbar />
-		</div>
-	);
+	const { basepath, name, env } = useAppContext();
 	
 	return (
 		<Query query={ ALL_CONTENT_TYPES }>
-			{ render }
+			{ ({ data, loading }) => (
+				<div className="font-sans antialias bg-grey-lightest min-h-screen">
+					<div className="bg-white border-b p-3">
+						<div className="container mx-auto flex items-baseline">
+							<h1 className="text-lg font-medium mr-4">
+								<Link to={ basepath } className="no-underline text-grey-dark hover:underline">
+									{ name }
+								</Link>
+							</h1>
+							{ !loading && <ContentMenu basepath={ basepath } content_types={ data.allContentTypes } /> }
+							{ 'local' === env && (
+								<Link to={`${basepath}/tinker`} className="ml-4 no-underline text-grey-dark hover:underline">
+									Tinker
+								</Link>
+							)}
+						</div>
+					</div>
+					<div className="container mx-auto py-8">
+						{ children }
+					</div>
+					<Snackbar />
+				</div>
+			) }
 		</Query>
 	);
 };

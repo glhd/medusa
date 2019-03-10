@@ -2,27 +2,30 @@
 
 namespace Galahad\Medusa\Support;
 
+use Galahad\Medusa\Console\Commands\CacheSchema;
+use Galahad\Medusa\Console\Commands\ClearSchemaCache;
 use Galahad\Medusa\Contracts\Content;
-use Galahad\Medusa\Contracts\ContentResolver;
-use Galahad\Medusa\Contracts\ContentTypeResolver;
+use Galahad\Medusa\Contracts\ContentRepository;
+use Galahad\Medusa\Contracts\ContentTypeRepository;
 use Galahad\Medusa\Events\ServingMedusa;
 use Galahad\Medusa\Exceptions\ConfigurationException;
 use Galahad\Medusa\Http\Controllers\ApiController;
 use Galahad\Medusa\Http\Controllers\FrontendController;
 use Galahad\Medusa\Medusa;
-use Galahad\Medusa\Resolvers\Content\EloquentResolver;
-use Galahad\Medusa\Resolvers\ContentType\ConventionalResolver;
+use Galahad\Medusa\Repositories\Content\EloquentRepository;
+use Galahad\Medusa\Repositories\ContentType\ConventionalRepository;
+use Galahad\Medusa\Schema;
 use Galahad\Medusa\Support\Policies\ConfigPolicy;
 use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Routing\Registrar;
-use Illuminate\Contracts\View\Factory;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\View\Compilers\BladeCompiler;
 
 class MedusaServiceProvider extends ServiceProvider
 {
@@ -33,10 +36,10 @@ class MedusaServiceProvider extends ServiceProvider
 		$this->bootConfig()
 			->bootPermissions($this->app->make(Gate::class), $this->app->make(Dispatcher::class))
 			->bootRoutes($this->app->make(Registrar::class))
-			->bootBlade($this->app->make(BladeCompiler::class))
 			->bootViews()
 			->bootMigrations()
-			->bootPublic();
+			->bootPublic()
+			->bootCommands();
 	}
 	
 	/**
@@ -46,17 +49,19 @@ class MedusaServiceProvider extends ServiceProvider
 	{
 		$this->mergeConfigFrom($this->basePath('config/medusa.php'), 'medusa');
 		
+		$this->app->singleton(Schema::class);
+		
 		$this->app->singleton('glhd.medusa.resolvers.content_type', function(Application $app) {
-			return new ConventionalResolver($app);
+			return new ConventionalRepository($app);
 		});
 		
-		$this->app->alias('glhd.medusa.resolvers.content_type', ContentTypeResolver::class);
+		$this->app->alias('glhd.medusa.resolvers.content_type', ContentTypeRepository::class);
 		
 		$this->app->singleton('glhd.medusa.resolvers.content', function(Application $app) {
-			return new EloquentResolver($app->make(Content::class));
+			return new EloquentRepository($app->make(Content::class));
 		});
 		
-		$this->app->alias('glhd.medusa.resolvers.content', ContentResolver::class);
+		$this->app->alias('glhd.medusa.resolvers.content', ContentRepository::class);
 		
 		$this->app->singleton('galahad.medusa', function(Application $app) {
 			return (new Medusa(
@@ -125,26 +130,12 @@ class MedusaServiceProvider extends ServiceProvider
 		
 		$registrar
 			->get("{$path}/web/{any?}", FrontendController::class)
-			->middleware($this->config('middleware'))
 			->name('medusa.frontend')
 			->where('any', '.*');
 		
 		$registrar
 			->any("{$path}/graphql", ApiController::class)
-			->name('medusa.graphql')
 			->middleware($this->config('middleware'));
-		
-		return $this;
-	}
-	
-	protected function bootBlade(BladeCompiler $compiler) : self
-	{
-		$compiler->directive('medusa', function ($expression) {
-			$view_class = MedusaView::class;
-			$factory_class = Factory::class;
-			$base_path = $this->basePath();
-			return "<?php echo (new {$view_class}(app('glhd.medusa.resolvers.content_type'), app({$factory_class}::class), '{$base_path}', $expression)); ?>";
-		});
 		
 		return $this;
 	}
@@ -168,7 +159,7 @@ class MedusaServiceProvider extends ServiceProvider
 	{
 		if (method_exists($this->app, 'databasePath')) {
 			$this->publishes([
-				$this->basePath('migrations/') => $this->app->databasePath('migrations')
+				$this->basePath('migrations/') => $this->app->databasePath('migrations'),
 			], 'medusa-migrations');
 		}
 		
@@ -179,8 +170,20 @@ class MedusaServiceProvider extends ServiceProvider
 	{
 		if (method_exists($this->app, 'publicPath')) {
 			$this->publishes([
-				$this->basePath('resources/public') => $this->app->publicPath('vendor/medusa')
+				$this->basePath('resources/public') => $this->app->publicPath('vendor/medusa'),
 			], 'medusa-public');
+		}
+		
+		return $this;
+	}
+	
+	protected function bootCommands() : self
+	{
+		if ($this->app->runningInConsole()) {
+			$this->commands([
+				CacheSchema::class,
+				ClearSchemaCache::class,
+			]);
 		}
 		
 		return $this;

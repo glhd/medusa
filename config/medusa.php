@@ -40,12 +40,12 @@ return [
 	| Default Middleware
 	|--------------------------------------------------------------------------
 	|
-	| Middleware to pass Medusa requests through. Should at least use auth
-	| middleware of some sort.
+	| Middleware to pass Medusa requests through. Medusa will automatically
+	| apply authentication middleware using the configured guard.
 	|
 	*/
 	
-	'middleware' => ['web', 'auth'],
+	'middleware' => ['web'],
 	
 	/*
 	|--------------------------------------------------------------------------

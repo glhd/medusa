@@ -10,12 +10,15 @@ trait SlugsContent
 	public static function bootSlugsContent()
 	{
 		static::saving(function(Content $content) {
-			if (empty($content->getSlug())) {
-				// FIXME: We need a way to indicate that the slug should always be updated
-				// TODO: Maybe fire a SluggedContent event so that a redirect can be set up if necessary
-				$slug_source = $content->getContentType()->generateSlugFromData($content->getData());
-				$slug = $content->addSlugSuffix(Str::slug($slug_source));
-				$content->setSlug($slug);
+			$existing = $content->getSlug();
+			
+			$slug = Str::slug(
+				$content->getContentType()
+					->generateSlugFromData($content->getData(), $existing)
+			);
+			
+			if (empty($existing) || $slug !== $existing) {
+				$content->setSlug($content->makeSlugUnique($slug));
 			}
 		});
 	}
@@ -32,7 +35,7 @@ trait SlugsContent
 		return $this;
 	}
 	
-	protected function addSlugSuffix(string $slug) : string
+	protected function makeSlugUnique(string $slug) : string
 	{
 		$suffix = 0;
 		$new_slug = $slug;
