@@ -3,6 +3,7 @@ import Fields from './Fields';
 import { EditorContext } from '../hooks/useEditorContext';
 import useData from "../hooks/useData";
 import useValidation from "../hooks/useValidation";
+import Debugger from './Debugger';
 
 export default function Editor(props) {
 	const { id, existing, content_type, onSave, saving } = props;
@@ -19,10 +20,13 @@ export default function Editor(props) {
 		? `Save Changes to ${ content_type.title }`
 		: `Save New ${ content_type.title }`;
 	
+	const DEBUGGER_ENABLED = false;
+	
 	return (
 		<EditorContext.Provider value={ context }>
 			<div className="bg-white border rounded-lg p-6">
 				<Fields fields={ fields } />
+				{ (true === DEBUGGER_ENABLED) && <Debugger {...data} /> }
 				<div className="pt-6">
 					<button
 						disabled={ disable_save }

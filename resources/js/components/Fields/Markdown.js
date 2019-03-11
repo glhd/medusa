@@ -8,8 +8,10 @@ export default function Markdown(props) {
 	const { id } = field;
 	const converter = useMemo(() => {
 		const class_map = {
-			h1: 'my-2',
-			p: 'my-2',
+			h1: 'mb-3',
+			h2: 'mb-3',
+			h3: 'mb-3',
+			p: 'mb-4',
 		};
 		
 		const bindings = Object.entries(class_map)
@@ -30,9 +32,9 @@ export default function Markdown(props) {
 	}, []);
 	
 	return (
-		<Group { ...props }>
-			<div className="flex -mx-2">
-				<div className="flex-1 mx-2">
+		<div className="flex -mx-3">
+			<div className="flex-1 px-3">
+				<Group { ...props }>
 					<textarea
 						ref={ textarea_ref }
 						className="shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline"
@@ -40,11 +42,18 @@ export default function Markdown(props) {
 						value={ value }
 						onChange={ e => onChange(e.target.value) }
 					/>
-				</div>
-				<div className="flex-1 mx-2">
-					<div dangerouslySetInnerHTML={ { __html: html } } />
+				</Group>
+			</div>
+			<div className="flex-1 px-3">
+				<div className="py-4 flex flex-col min-h-full">
+					<div className="bold mb-2">
+						Preview
+					</div>
+					<div className="flex-1 shadow appearance-none border rounded w-full py-2 px-3 text-grey-darker leading-tight focus:outline-none focus:shadow-outline">
+						<div dangerouslySetInnerHTML={ { __html: html } } />
+					</div>
 				</div>
 			</div>
-		</Group>
+		</div>
 	);
 };

@@ -2,19 +2,20 @@ import React from 'react';
 import { Link } from '@reach/router';
 import Loading from "../components/Loading";
 import { ALL_CONTENT } from '../graphql/queries';
-import Debugger from "../components/Debugger";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { Query } from "react-apollo";
 
 export default function Home({ page = 1 }) {
 	const render = ({ data, loading, error }) => {
-		if (loading || !('allContent' in data)) {
+		if (loading) {
 			return <Loading />;
 		}
 		
 		if (error) {
 			console.log(error);
-			return <Debugger error={ error } />; // FIXME
+			if (!data || !('allContent' in data)) {
+				throw error;
+			}
 		}
 		
 		const { total, per_page, content } = data.allContent;
@@ -66,7 +67,7 @@ export default function Home({ page = 1 }) {
 	
 	return (
 		<ErrorBoundary name="the Home component">
-			<Query query={ ALL_CONTENT } variables={ { page } } fetchPolicy={ 'no-cache' }>
+			<Query query={ ALL_CONTENT } variables={ { page } } fetchPolicy="cache-and-network">
 				{ render }
 			</Query>
 		</ErrorBoundary>

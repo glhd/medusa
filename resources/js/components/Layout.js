@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, navigate } from '@reach/router';
 import { Menu, MenuButton, MenuItem, MenuList } from '@reach/menu-button';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTerminal } from "@fortawesome/free-solid-svg-icons";
 import { faPlusSquare } from "@fortawesome/free-regular-svg-icons";
 import { Query } from "react-apollo";
 import Snackbar from "./Snackbar";
@@ -15,7 +15,7 @@ export default function Layout({ children }) {
 	return (
 		<Query query={ ALL_CONTENT_TYPES }>
 			{ ({ data, loading }) => (
-				<div className="font-sans antialias bg-grey-lightest min-h-screen">
+				<div className="font-sans antialias bg-grey-lightest min-h-screen flex flex-col">
 					<div className="bg-white border-b p-3">
 						<div className="container mx-auto flex items-baseline">
 							<h1 className="text-lg font-medium mr-4">
@@ -25,13 +25,14 @@ export default function Layout({ children }) {
 							</h1>
 							{ !loading && <ContentMenu basepath={ basepath } content_types={ data.allContentTypes } /> }
 							{ 'local' === env && (
-								<Link to={`${basepath}/tinker`} className="ml-4 no-underline text-grey-dark hover:underline">
+								<Link to={`${basepath}/tinker`} className="ml-auto no-underline font-mono text-sm text-purple hover:underline">
+									<FontAwesomeIcon icon={faTerminal} className="mr-1" />
 									Tinker
 								</Link>
 							)}
 						</div>
 					</div>
-					<div className="container mx-auto py-8">
+					<div className="container mx-auto py-8 flex-1">
 						{ children }
 					</div>
 					<Snackbar />

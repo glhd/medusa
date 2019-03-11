@@ -19,6 +19,7 @@ export const ALL_CONTENT_TYPES = gql`
         }
     }
 `;
+
 export const GET_CONTENT_TYPE = gql`
     query GetContentType($id: ID!) {
         getContentType(id: $id) {
@@ -38,7 +39,6 @@ export const GET_CONTENT_TYPE = gql`
         }
     }
 `;
-
 
 export const ALL_CONTENT = gql`
     query AllContent($page: Int) {
@@ -61,6 +61,7 @@ export const GET_CONTENT = gql`
     query GetContent($id: ID!) {
         getContent(id: $id) {
             id
+            slug
             description
             content_type {
                 id
@@ -78,6 +79,24 @@ export const GET_CONTENT = gql`
                 }
             }
             data
+        }
+    }
+`;
+
+export const SEARCH_CONTENT = gql`
+    query SearchContent($query: String!, $content_type_id: ID, $page: Int) {
+        searchContent(query: $query, content_type_id: $content_type_id, page: $page) {
+            total
+            per_page
+            content {
+                id
+                slug
+                description
+                content_type {
+                    id
+                    title
+                }
+            }
         }
     }
 `;

@@ -8,8 +8,8 @@ LaravelMix
 	.autoload({
 		jquery: ['$', 'window.jQuery']
 	})
-	.webpackConfig(() => {
-		const plugins = [];
+	.webpackConfig(webpack => {
+		const plugins = [new webpack.IgnorePlugin(/\.flow$/)];
 		const loaders = ['style-loader'];
 		
 		if ('production' === process.env.NODE_ENV) {

@@ -26,7 +26,8 @@ export default function CreateContent({ content_type_id }) {
 							addNotification(`There was an error saving this ${ content_type.title }.`, { dangerous: true, timeout: 7500 });
 						},
 						onCompleted: (data) => {
-							const { id } = data.createContent;
+							// FIXME: Handle success/message
+							const { id } = data.createContent.content;
 							addNotification(`Created new ${ content_type.title }!`, { successful: true });
 							navigate(`${ basepath }/content/${ id }`);
 						},

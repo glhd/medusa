@@ -30,6 +30,7 @@ export default function UpdateContent({ id }) {
 					const mutation_config = {
 						mutation: UPDATE_CONTENT,
 						onCompleted: () => {
+							// FIXME: Handle error message from server
 							setLastSaved(new Date());
 							addNotification(`Your changes to this ${ content_type.title } have been saved!`, { successful: true });
 						},

@@ -14,4 +14,6 @@ interface ContentRepository
 	public function exists($id) : bool;
 	
 	public function paginate($per_page = null, $page = null) : LengthAwarePaginator;
+	
+	public function search(array $options) : LengthAwarePaginator;
 }

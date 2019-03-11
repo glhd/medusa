@@ -50,6 +50,7 @@ type Query {
     allContentTypes: [ContentType!]!
     getContent(id: ID!): Content
     allContent(page: Int): PaginatedContent!
+    searchContent(query: String!, content_type_id: ID, page: Int) : PaginatedContent!
 }
 
 type CreateContentResponse implements MutationResponse {
