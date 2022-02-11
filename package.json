@@ -22,7 +22,7 @@
     "codemirror": "^5.44.0",
     "css-loader": "^2.1.0",
     "fg-loadcss": "^2.1.0",
-    "froala-editor": "^2.9.3",
+    "froala-editor": "^4.0.7",
     "graphiql": "^0.13.0",
     "graphql": "^14.1.1",
     "jquery": "^3.3.1",

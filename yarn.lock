@@ -4596,13 +4596,18 @@ friendly-errors-webpack-plugin@^1.6.1:
     error-stack-parser "^2.0.0"
     string-width "^2.0.0"
 
-froala-editor@2.9.3, froala-editor@^2.9.3:
+froala-editor@2.9.3:
   version "2.9.3"
   resolved "https://registry.yarnpkg.com/froala-editor/-/froala-editor-2.9.3.tgz#206cfbd66b29fa1ef79a763c6f2150aed9822deb"
   integrity sha512-3ijpP3ovXmbsErlX1lLMdSFT6/B8Ajng9PKDrbKJ6zXu8N7hC0JHwJNiNm0j97qIV2+HxniXrSoGTUf26E9m5A==
   dependencies:
     font-awesome ">=4.4.0"
     jquery ">=1.11.0"
+
+froala-editor@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/froala-editor/-/froala-editor-4.0.7.tgz#adbb773526d1b218cd7fee2f4db40bb0f40fd042"
+  integrity sha512-V4n9/IkRf0MyCgkvj4CZtaXH0heWwRD2hca/59wdbrSFv6HVIzDe0cBzE2pj6NNUSk8b3EuiCm2P/yDrf8/rTw==
 
 from2@^2.1.0:
   version "2.3.0"
